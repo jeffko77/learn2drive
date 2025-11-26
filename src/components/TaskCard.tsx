@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Circle, Clock, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, Circle, Clock, MessageSquare, ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
 
 interface TaskCardProps {
   id: string;
@@ -72,11 +72,13 @@ export function TaskCard({
     setSaving(false);
   };
 
+  const hasFeedback = Boolean(feedback);
+
   return (
     <div
       className={`card p-4 transition-all ${
         status === "completed" ? "opacity-75" : ""
-      }`}
+      } ${hasFeedback ? "border-highway-orange/40" : ""}`}
     >
       <div className="flex items-start gap-3">
         <button
@@ -89,16 +91,23 @@ export function TaskCard({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <h4
-              className={`font-medium ${
-                status === "completed" ? "line-through text-chrome/60" : "text-chrome"
-              }`}
-            >
-              {title}
-            </h4>
+            <div className="flex items-center gap-2 min-w-0">
+              <h4
+                className={`font-medium truncate ${
+                  status === "completed" ? "line-through text-chrome/60" : "text-chrome"
+                }`}
+              >
+                {title}
+              </h4>
+              {feedback && (
+                <div className="flex-shrink-0 p-1 rounded-md bg-highway-orange/20" title="Instructor feedback available">
+                  <MessageCircle size={14} className="text-highway-orange" />
+                </div>
+              )}
+            </div>
             <button
               onClick={() => setExpanded(!expanded)}
-              className="tap-target p-2 text-chrome/60 hover:text-chrome"
+              className="tap-target p-2 text-chrome/60 hover:text-chrome flex-shrink-0"
             >
               {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>
@@ -112,6 +121,14 @@ export function TaskCard({
             <p className="text-xs text-signal-green mt-2">
               Completed on {new Date(completionDate).toLocaleDateString()}
             </p>
+          )}
+
+          {/* Feedback preview when collapsed */}
+          {hasFeedback && !expanded && (
+            <div className="mt-2 p-2 rounded-lg bg-highway-orange/10 border border-highway-orange/20">
+              <p className="text-xs text-highway-orange font-medium mb-0.5">Instructor Feedback:</p>
+              <p className="text-xs text-chrome/70 line-clamp-2">{feedback}</p>
+            </div>
           )}
         </div>
       </div>
