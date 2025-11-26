@@ -30,6 +30,7 @@ export function TaskCard({
   const [localNotes, setLocalNotes] = useState(notes || "");
   const [localFeedback, setLocalFeedback] = useState(feedback || "");
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const statusConfig = {
     not_started: {
@@ -68,8 +69,23 @@ export function TaskCard({
 
   const handleSaveNotes = async () => {
     setSaving(true);
+    setSaved(false);
     await onNotesChange(id, localNotes, localFeedback);
     setSaving(false);
+    setSaved(true);
+    // Reset saved state after 3 seconds
+    setTimeout(() => setSaved(false), 3000);
+  };
+
+  // Reset saved state when user makes changes
+  const handleNotesChange = (value: string) => {
+    setLocalNotes(value);
+    setSaved(false);
+  };
+
+  const handleFeedbackChange = (value: string) => {
+    setLocalFeedback(value);
+    setSaved(false);
   };
 
   const hasFeedback = Boolean(feedback);
@@ -143,7 +159,7 @@ export function TaskCard({
               </label>
               <textarea
                 value={localNotes}
-                onChange={(e) => setLocalNotes(e.target.value)}
+                onChange={(e) => handleNotesChange(e.target.value)}
                 placeholder="Add notes about this skill..."
                 className="input min-h-[80px] resize-none"
               />
@@ -155,7 +171,7 @@ export function TaskCard({
               </label>
               <textarea
                 value={localFeedback}
-                onChange={(e) => setLocalFeedback(e.target.value)}
+                onChange={(e) => handleFeedbackChange(e.target.value)}
                 placeholder="Feedback for the driver..."
                 className="input min-h-[80px] resize-none"
               />
@@ -163,10 +179,10 @@ export function TaskCard({
 
             <button
               onClick={handleSaveNotes}
-              disabled={saving}
-              className="btn btn-primary w-full"
+              disabled={saving || saved}
+              className={`btn w-full ${saved ? "bg-chrome/30 text-chrome/60 cursor-default" : "btn-primary"}`}
             >
-              {saving ? "Saving..." : "Save Notes"}
+              {saving ? "Saving..." : saved ? "✓ Saved" : "Save Notes"}
             </button>
           </div>
         </div>
