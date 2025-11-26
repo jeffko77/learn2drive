@@ -282,8 +282,8 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                           </div>
                         )}
                         {task.progress?.feedback && (
-                          <div className="mt-2 p-3 rounded-lg bg-highway-orange/10 border border-highway-orange/20">
-                            <p className="text-xs text-highway-orange mb-1">Instructor Feedback:</p>
+                          <div className="mt-2 p-3 rounded-lg bg-sky-blue/10 border border-sky-blue/20">
+                            <p className="text-xs text-sky-blue mb-1">Instructor Feedback:</p>
                             <p className="text-sm text-chrome/80">{task.progress.feedback}</p>
                           </div>
                         )}

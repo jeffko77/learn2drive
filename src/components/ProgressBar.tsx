@@ -19,8 +19,7 @@ export function ProgressBar({
   
   const getColorClass = () => {
     if (percentage >= 80) return "green";
-    if (percentage >= 40) return "yellow";
-    return "red";
+    return "yellow";
   };
 
   const heights = {

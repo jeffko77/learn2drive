@@ -125,8 +125,8 @@ export function TaskCard({
 
           {/* Feedback preview when collapsed */}
           {hasFeedback && !expanded && (
-            <div className="mt-2 p-2 rounded-lg bg-highway-orange/10 border border-highway-orange/20">
-              <p className="text-xs text-highway-orange font-medium mb-0.5">Instructor Feedback:</p>
+            <div className="mt-2 p-2 rounded-lg bg-sky-blue/10 border border-sky-blue/20">
+              <p className="text-xs text-sky-blue font-medium mb-0.5">Instructor Feedback:</p>
               <p className="text-xs text-chrome/70 line-clamp-2">{feedback}</p>
             </div>
           )}
