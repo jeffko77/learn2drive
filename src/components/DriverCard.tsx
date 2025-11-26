@@ -25,11 +25,13 @@ interface DriverCardProps {
 // Parse date string to local date (avoiding timezone issues)
 function parseLocalDate(dateInput: Date | string): Date {
   if (dateInput instanceof Date) {
-    return dateInput;
+    // For Date objects, extract UTC components to avoid timezone shift
+    return new Date(dateInput.getUTCFullYear(), dateInput.getUTCMonth(), dateInput.getUTCDate());
   }
   if (dateInput.includes('T')) {
     const parsed = parseISO(dateInput);
-    return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+    // Create a new date using UTC year/month/day to avoid timezone shift
+    return new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate());
   }
   const [year, month, day] = dateInput.split('-').map(Number);
   return new Date(year, month - 1, day);

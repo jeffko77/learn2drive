@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Car, Clock, FileText } from "lucide-react";
+import { ChevronLeft, ChevronRight, Car, Clock, FileText, Edit2 } from "lucide-react";
 import {
   format,
   startOfMonth,
@@ -29,9 +29,10 @@ interface DrivingCalendarProps {
   logs: DrivingLog[];
   onDateClick?: (date: Date, logs: DrivingLog[]) => void;
   onLogClick?: (log: DrivingLog) => void;
+  onEditLog?: (log: DrivingLog) => void;
 }
 
-export function DrivingCalendar({ logs, onDateClick, onLogClick }: DrivingCalendarProps) {
+export function DrivingCalendar({ logs, onDateClick, onLogClick, onEditLog }: DrivingCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -181,11 +182,23 @@ export function DrivingCalendar({ logs, onDateClick, onLogClick }: DrivingCalend
                         {formatDuration(log.duration)}
                       </span>
                     </div>
-                    {log.weather && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-chrome/10 text-chrome/60">
-                        {log.weather}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {log.weather && (
+                        <span className="text-xs px-2 py-1 rounded-full bg-chrome/10 text-chrome/60">
+                          {log.weather}
+                        </span>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEditLog?.(log);
+                        }}
+                        className="p-1.5 rounded-lg hover:bg-chrome/20 text-chrome/50 hover:text-sky-blue transition-all"
+                        title="Edit session"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                    </div>
                   </div>
                   
                   {log.roadTypes && (

@@ -2,11 +2,21 @@
 
 import { useState } from "react";
 import { Car, Clock, Cloud, MapPin, FileText, X } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
+
+interface ExistingLog {
+  id: string;
+  date: string;
+  duration: number;
+  notes: string | null;
+  weather: string | null;
+  roadTypes: string | null;
+}
 
 interface DrivingLogFormProps {
   driverId: string;
   initialDate?: Date;
+  existingLog?: ExistingLog;
   onSubmit: (data: {
     date: string;
     duration: number;
@@ -34,14 +44,24 @@ const roadTypeOptions = [
   { value: "rural", label: "Rural Roads" },
 ];
 
-export function DrivingLogForm({ driverId, initialDate, onSubmit, onCancel }: DrivingLogFormProps) {
-  const [date, setDate] = useState(format(initialDate || new Date(), "yyyy-MM-dd"));
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(30);
-  const [weather, setWeather] = useState("");
-  const [roadTypes, setRoadTypes] = useState<string[]>([]);
-  const [notes, setNotes] = useState("");
+export function DrivingLogForm({ driverId, initialDate, existingLog, onSubmit, onCancel }: DrivingLogFormProps) {
+  // Parse existing log values
+  const existingDuration = existingLog?.duration || 0;
+  const existingHours = Math.floor(existingDuration / 60);
+  const existingMinutes = existingDuration % 60;
+  const existingRoadTypes = existingLog?.roadTypes?.split(", ").filter(Boolean) || [];
+
+  const [date, setDate] = useState(
+    existingLog ? format(parseISO(existingLog.date), "yyyy-MM-dd") : format(initialDate || new Date(), "yyyy-MM-dd")
+  );
+  const [hours, setHours] = useState(existingLog ? existingHours : 0);
+  const [minutes, setMinutes] = useState(existingLog ? existingMinutes : 30);
+  const [weather, setWeather] = useState(existingLog?.weather || "");
+  const [roadTypes, setRoadTypes] = useState<string[]>(existingRoadTypes);
+  const [notes, setNotes] = useState(existingLog?.notes || "");
   const [saving, setSaving] = useState(false);
+
+  const isEditing = !!existingLog;
 
   const handleRoadTypeToggle = (type: string) => {
     setRoadTypes((prev) =>
@@ -77,7 +97,7 @@ export function DrivingLogForm({ driverId, initialDate, onSubmit, onCancel }: Dr
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-chrome flex items-center gap-2">
           <Car size={18} className="text-sky-blue" />
-          Log Driving Session
+          {isEditing ? "Edit Driving Session" : "Log Driving Session"}
         </h3>
         <button
           type="button"
@@ -208,7 +228,7 @@ export function DrivingLogForm({ driverId, initialDate, onSubmit, onCancel }: Dr
           disabled={saving}
           className="btn btn-primary w-full"
         >
-          {saving ? "Saving..." : "Save Driving Log"}
+          {saving ? "Saving..." : isEditing ? "Update Session" : "Save Driving Log"}
         </button>
       </div>
     </form>

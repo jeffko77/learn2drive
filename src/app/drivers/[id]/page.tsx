@@ -59,6 +59,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
   const [drivingLogs, setDrivingLogs] = useState<DrivingLog[]>([]);
   const [showLogForm, setShowLogForm] = useState(false);
   const [selectedLogDate, setSelectedLogDate] = useState<Date | null>(null);
+  const [editingLog, setEditingLog] = useState<DrivingLog | null>(null);
 
   useEffect(() => {
     fetchDriver();
@@ -102,19 +103,40 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
     roadTypes: string;
   }) => {
     try {
-      const res = await fetch("/api/driving-logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ driverId: id, ...data }),
-      });
-      if (res.ok) {
-        await fetchDrivingLogs();
-        setShowLogForm(false);
-        setSelectedLogDate(null);
+      if (editingLog) {
+        // Update existing log
+        const res = await fetch(`/api/driving-logs/${editingLog.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (res.ok) {
+          await fetchDrivingLogs();
+          setShowLogForm(false);
+          setSelectedLogDate(null);
+          setEditingLog(null);
+        }
+      } else {
+        // Create new log
+        const res = await fetch("/api/driving-logs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ driverId: id, ...data }),
+        });
+        if (res.ok) {
+          await fetchDrivingLogs();
+          setShowLogForm(false);
+          setSelectedLogDate(null);
+        }
       }
     } catch (error) {
-      console.error("Error adding driving log:", error);
+      console.error("Error saving driving log:", error);
     }
+  };
+
+  const handleEditLog = (log: DrivingLog) => {
+    setEditingLog(log);
+    setShowLogForm(true);
   };
 
   // Calculate total driving time
@@ -322,6 +344,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                 </h3>
                 <button
                   onClick={() => {
+                    setEditingLog(null);
                     setSelectedLogDate(new Date());
                     setShowLogForm(true);
                   }}
@@ -350,10 +373,12 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
               <DrivingLogForm
                 driverId={id}
                 initialDate={selectedLogDate || undefined}
+                existingLog={editingLog || undefined}
                 onSubmit={handleAddDrivingLog}
                 onCancel={() => {
                   setShowLogForm(false);
                   setSelectedLogDate(null);
+                  setEditingLog(null);
                 }}
               />
             )}
@@ -364,10 +389,12 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                 logs={drivingLogs}
                 onDateClick={(date, logs) => {
                   if (logs.length === 0) {
+                    setEditingLog(null);
                     setSelectedLogDate(date);
                     setShowLogForm(true);
                   }
                 }}
+                onEditLog={handleEditLog}
               />
             </div>
           </div>

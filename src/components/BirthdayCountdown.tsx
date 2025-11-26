@@ -12,13 +12,14 @@ interface BirthdayCountdownProps {
 // Parse date string to local date (avoiding timezone issues)
 function parseLocalDate(dateInput: Date | string): Date {
   if (dateInput instanceof Date) {
-    return dateInput;
+    // For Date objects, extract UTC components to avoid timezone shift
+    return new Date(dateInput.getUTCFullYear(), dateInput.getUTCMonth(), dateInput.getUTCDate());
   }
-  // If it's an ISO string with time component, parse and adjust
+  // If it's an ISO string with time component, parse and use UTC values
   if (dateInput.includes('T')) {
     const parsed = parseISO(dateInput);
-    // Create a new date using local year/month/day
-    return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+    // Create a new date using UTC year/month/day to avoid timezone shift
+    return new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate());
   }
   // If it's just a date string like "2010-11-01", parse as local
   const [year, month, day] = dateInput.split('-').map(Number);
