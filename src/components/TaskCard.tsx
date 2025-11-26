@@ -96,9 +96,15 @@ export function TaskCard({
         status === "completed" ? "opacity-75" : ""
       } ${hasFeedback ? "border-highway-orange/40" : ""}`}
     >
-      <div className="flex items-start gap-3">
+      <div 
+        className="flex items-start gap-3 cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
         <button
-          onClick={handleStatusCycle}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleStatusCycle();
+          }}
           className={`tap-target p-2 rounded-xl ${config.bgColor} transition-all hover:scale-110`}
           aria-label={`Change status, currently ${config.label}`}
         >
@@ -121,12 +127,9 @@ export function TaskCard({
                 </div>
               )}
             </div>
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="tap-target p-2 text-chrome/60 hover:text-chrome flex-shrink-0"
-            >
+            <div className="tap-target p-2 text-chrome/60 flex-shrink-0">
               {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-            </button>
+            </div>
           </div>
 
           {description && (
