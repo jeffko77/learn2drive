@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { User, Calendar, ChevronRight, Trash2 } from "lucide-react";
-import { format, differenceInYears, differenceInDays, addYears } from "date-fns";
+import { format, differenceInYears, differenceInDays, addYears, parseISO } from "date-fns";
 import { ProgressBar } from "./ProgressBar";
 
 interface Phase {
@@ -22,6 +22,19 @@ interface DriverCardProps {
   onDelete?: (id: string) => void;
 }
 
+// Parse date string to local date (avoiding timezone issues)
+function parseLocalDate(dateInput: Date | string): Date {
+  if (dateInput instanceof Date) {
+    return dateInput;
+  }
+  if (dateInput.includes('T')) {
+    const parsed = parseISO(dateInput);
+    return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+  }
+  const [year, month, day] = dateInput.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function DriverCard({
   id,
   name,
@@ -30,7 +43,7 @@ export function DriverCard({
   phases,
   onDelete,
 }: DriverCardProps) {
-  const birth = new Date(birthDate);
+  const birth = parseLocalDate(birthDate);
   const age = differenceInYears(new Date(), birth);
   const sixteenthBirthday = addYears(birth, 16);
   const daysUntil16 = differenceInDays(sixteenthBirthday, new Date());
@@ -83,7 +96,7 @@ export function DriverCard({
                 Age {age}
               </span>
               <span>
-                Started {format(new Date(startDate), "MMM yyyy")}
+                Started {format(parseLocalDate(startDate), "MMM yyyy")}
               </span>
             </div>
 

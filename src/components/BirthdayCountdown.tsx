@@ -1,12 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { differenceInDays, differenceInMonths, differenceInYears, addYears, format } from "date-fns";
+import { differenceInDays, differenceInMonths, differenceInYears, addYears, format, parseISO } from "date-fns";
 import { Cake, PartyPopper, Car } from "lucide-react";
 
 interface BirthdayCountdownProps {
   birthDate: Date | string;
   name: string;
+}
+
+// Parse date string to local date (avoiding timezone issues)
+function parseLocalDate(dateInput: Date | string): Date {
+  if (dateInput instanceof Date) {
+    return dateInput;
+  }
+  // If it's an ISO string with time component, parse and adjust
+  if (dateInput.includes('T')) {
+    const parsed = parseISO(dateInput);
+    // Create a new date using local year/month/day
+    return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+  }
+  // If it's just a date string like "2010-11-01", parse as local
+  const [year, month, day] = dateInput.split('-').map(Number);
+  return new Date(year, month - 1, day);
 }
 
 export function BirthdayCountdown({ birthDate, name }: BirthdayCountdownProps) {
@@ -24,7 +40,7 @@ export function BirthdayCountdown({ birthDate, name }: BirthdayCountdownProps) {
     );
   }
 
-  const birth = new Date(birthDate);
+  const birth = parseLocalDate(birthDate);
   const now = new Date();
   const sixteenthBirthday = addYears(birth, 16);
   
