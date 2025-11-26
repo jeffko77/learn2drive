@@ -1,26 +1,449 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Road & Driving themed color palette */
+  --color-asphalt: #1a1a2e;
+  --color-road-dark: #16213e;
+  --color-signal-green: #00d26a;
+  --color-signal-yellow: #ffc107;
+  --color-signal-red: #ff4757;
+  --color-sky-blue: #4ea8de;
+  --color-highway-orange: #ff6b35;
+  --color-chrome: #e8e8e8;
+  --color-dashboard: #0f0f23;
+  
+  /* Semantic colors */
+  --background: var(--color-asphalt);
+  --foreground: var(--color-chrome);
+  --card-bg: var(--color-road-dark);
+  --accent: var(--color-sky-blue);
+  --success: var(--color-signal-green);
+  --warning: var(--color-signal-yellow);
+  --danger: var(--color-signal-red);
+  --highlight: var(--color-highway-orange);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-asphalt: #1a1a2e;
+  --color-road-dark: #16213e;
+  --color-signal-green: #00d26a;
+  --color-signal-yellow: #ffc107;
+  --color-signal-red: #ff4757;
+  --color-sky-blue: #4ea8de;
+  --color-highway-orange: #ff6b35;
+  --color-chrome: #e8e8e8;
+  --color-dashboard: #0f0f23;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, var(--color-dashboard) 0%, var(--color-asphalt) 50%, var(--color-road-dark) 100%);
+  color: var(--color-chrome);
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* Road pattern background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 49.5%,
+      rgba(255, 255, 255, 0.03) 49.5%,
+      rgba(255, 255, 255, 0.03) 50.5%,
+      transparent 50.5%,
+      transparent
+    );
+  background-size: 200px 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dashboard);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sky-blue);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-highway-orange);
+}
+
+/* Card styling */
+.card {
+  background: linear-gradient(145deg, rgba(22, 33, 62, 0.9), rgba(26, 26, 46, 0.95));
+  border: 1px solid rgba(78, 168, 222, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Button base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: none;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-sky-blue), #3b8fc2);
+  color: white;
+  box-shadow: 0 4px 12px rgba(78, 168, 222, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(78, 168, 222, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--color-signal-green), #00b359);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, var(--color-signal-yellow), #e6ac00);
+  color: #1a1a2e;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--color-signal-red), #e63e4d);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-chrome);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Input styling */
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(15, 15, 35, 0.8);
+  border: 1px solid rgba(78, 168, 222, 0.2);
+  border-radius: 12px;
+  color: var(--color-chrome);
+  font-size: 16px;
+  transition: all 0.2s;
+  min-height: 48px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-sky-blue);
+  box-shadow: 0 0 0 3px rgba(78, 168, 222, 0.15);
+}
+
+.input::placeholder {
+  color: rgba(232, 232, 232, 0.4);
+}
+
+/* Progress bar */
+.progress-bar {
+  height: 8px;
+  background: rgba(15, 15, 35, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-fill.green {
+  background: linear-gradient(90deg, var(--color-signal-green), #00ff88);
+}
+
+.progress-fill.yellow {
+  background: linear-gradient(90deg, var(--color-signal-yellow), #ffe066);
+}
+
+.progress-fill.red {
+  background: linear-gradient(90deg, var(--color-signal-red), #ff6b6b);
+}
+
+/* Status badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-success {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--color-signal-green);
+  border: 1px solid rgba(0, 210, 106, 0.3);
+}
+
+.badge-warning {
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--color-signal-yellow);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge-danger {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--color-signal-red);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+.badge-info {
+  background: rgba(78, 168, 222, 0.15);
+  color: var(--color-sky-blue);
+  border: 1px solid rgba(78, 168, 222, 0.3);
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes checkmark {
+  0% { stroke-dashoffset: 50; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Tap targets for mobile */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile bottom navigation */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(15, 15, 35, 0.98), rgba(22, 33, 62, 0.95));
+  border-top: 1px solid rgba(78, 168, 222, 0.2);
+  backdrop-filter: blur(20px);
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 100;
+}
+
+/* Road line decorations */
+.road-line {
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--color-signal-yellow), transparent);
+  margin: 20px auto;
+  border-radius: 2px;
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: rgba(22, 33, 62, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Traffic light indicator */
+.traffic-light {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.traffic-light .light {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.traffic-light .light.red { background: rgba(255, 71, 87, 0.3); }
+.traffic-light .light.yellow { background: rgba(255, 193, 7, 0.3); }
+.traffic-light .light.green { background: rgba(0, 210, 106, 0.3); }
+
+.traffic-light .light.red.active { background: var(--color-signal-red); box-shadow: 0 0 12px var(--color-signal-red); }
+.traffic-light .light.yellow.active { background: var(--color-signal-yellow); box-shadow: 0 0 12px var(--color-signal-yellow); }
+.traffic-light .light.green.active { background: var(--color-signal-green); box-shadow: 0 0 12px var(--color-signal-green); }
+
+/* Countdown timer styling */
+.countdown {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(15, 15, 35, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(78, 168, 222, 0.2);
+}
+
+.countdown-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, var(--color-sky-blue), var(--color-highway-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.countdown-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(232, 232, 232, 0.6);
+  margin-top: 4px;
+}
+
+/* Quiz option styling */
+.quiz-option {
+  padding: 16px;
+  border: 2px solid rgba(78, 168, 222, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(15, 15, 35, 0.4);
+}
+
+.quiz-option:hover {
+  border-color: var(--color-sky-blue);
+  background: rgba(78, 168, 222, 0.1);
+}
+
+.quiz-option.selected {
+  border-color: var(--color-sky-blue);
+  background: rgba(78, 168, 222, 0.2);
+}
+
+.quiz-option.correct {
+  border-color: var(--color-signal-green);
+  background: rgba(0, 210, 106, 0.2);
+}
+
+.quiz-option.incorrect {
+  border-color: var(--color-signal-red);
+  background: rgba(255, 71, 87, 0.2);
+}
+
+/* Loading spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(78, 168, 222, 0.2);
+  border-top-color: var(--color-sky-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Toast notifications */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  z-index: 200;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Safe area padding for mobile */
+.safe-bottom {
+  padding-bottom: max(80px, calc(60px + env(safe-area-inset-bottom)));
+}
+
+/* Custom fonts */
+@font-face {
+  font-family: 'Outfit';
+  src: url('https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC1O4a0EwItq6fNIg.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
 }

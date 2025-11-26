@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ea8de;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6b35;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="28.799999999999997" fill="url(#grad)"/>
+  <g transform="translate(38.400000000000006, 48)" fill="white">
+    <ellipse cx="57.599999999999994" cy="67.19999999999999" rx="48" ry="28.799999999999997"/>
+    <rect x="15.36" y="28.799999999999997" width="28.799999999999997" height="48" rx="3.84"/>
+    <rect x="67.19999999999999" y="28.799999999999997" width="28.799999999999997" height="48" rx="3.84"/>
+    <ellipse cx="28.799999999999997" cy="86.4" rx="15.36" ry="15.36" fill="#333"/>
+    <ellipse cx="86.4" cy="86.4" rx="15.36" ry="15.36" fill="#333"/>
+  </g>
+  <text x="96" y="163.2" font-family="Arial, sans-serif" font-size="28.799999999999997" font-weight="bold" fill="white" text-anchor="middle">L2D</text>
+</svg>

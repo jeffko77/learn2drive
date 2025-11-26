@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Driver {
+  id          String    @id @default(cuid())
+  name        String
+  birthDate   DateTime  @map("birth_date")
+  startDate   DateTime  @map("start_date")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  phases       Phase[]
+  quizAttempts QuizAttempt[]
+
+  @@map("drivers")
+}
+
+model Phase {
+  id          String   @id @default(cuid())
+  driverId    String   @map("driver_id")
+  title       String
+  description String?
+  orderIndex  Int      @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  tasks  Task[]
+
+  @@map("phases")
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  phaseId     String   @map("phase_id")
+  title       String
+  description String?
+  orderIndex  Int      @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  phase    Phase     @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  progress Progress?
+
+  @@map("tasks")
+}
+
+model Progress {
+  id             String    @id @default(cuid())
+  taskId         String    @unique @map("task_id")
+  status         String    @default("not_started") // not_started, in_progress, completed
+  completionDate DateTime? @map("completion_date")
+  notes          String?   @db.Text
+  feedback       String?   @db.Text
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("progress")
+}
+
+model QuizQuestion {
+  id               String   @id @default(cuid())
+  topic            String
+  questionText     String   @map("question_text") @db.Text
+  optionA          String   @map("option_a")
+  optionB          String   @map("option_b")
+  optionC          String   @map("option_c")
+  optionD          String   @map("option_d")
+  correctAnswer    String   @map("correct_answer") // A, B, C, or D
+  explanation      String?  @db.Text
+  chapterReference String?  @map("chapter_reference")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  answers QuizAnswer[]
+
+  @@map("quiz_questions")
+}
+
+model QuizAttempt {
+  id             String   @id @default(cuid())
+  driverId       String   @map("driver_id")
+  score          Int
+  totalQuestions Int      @map("total_questions")
+  dateTaken      DateTime @default(now()) @map("date_taken")
+  timeTaken      Int?     @map("time_taken") // in seconds
+  mode           String   @default("practice") // practice or test
+
+  driver  Driver       @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@map("quiz_attempts")
+}
+
+model QuizAnswer {
+  id             String  @id @default(cuid())
+  attemptId      String  @map("attempt_id")
+  questionId     String  @map("question_id")
+  selectedAnswer String? @map("selected_answer")
+  isCorrect      Boolean @map("is_correct")
+
+  attempt  QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_answers")
+}
