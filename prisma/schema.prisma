@@ -17,8 +17,25 @@ model Driver {
   
   phases       Phase[]
   quizAttempts QuizAttempt[]
+  drivingLogs  DrivingLog[]
 
   @@map("drivers")
+}
+
+model DrivingLog {
+  id          String   @id @default(cuid())
+  driverId    String   @map("driver_id")
+  date        DateTime @db.Date
+  duration    Int      // duration in minutes
+  notes       String?  @db.Text
+  weather     String?  // clear, rain, snow, fog, night
+  roadTypes   String?  @map("road_types") // residential, highway, city, parking
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@map("driving_logs")
 }
 
 model Phase {

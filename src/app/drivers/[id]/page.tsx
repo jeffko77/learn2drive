@@ -6,7 +6,9 @@ import { Navigation } from "@/components/Navigation";
 import { BirthdayCountdown } from "@/components/BirthdayCountdown";
 import { ProgressBar } from "@/components/ProgressBar";
 import { PhaseAccordion } from "@/components/PhaseAccordion";
-import { ArrowLeft, Edit2, Trophy, Clock, CheckCircle2, FileText } from "lucide-react";
+import { DrivingCalendar } from "@/components/DrivingCalendar";
+import { DrivingLogForm } from "@/components/DrivingLogForm";
+import { ArrowLeft, Edit2, Trophy, Clock, CheckCircle2, FileText, Car, Plus } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -39,15 +41,28 @@ interface Driver {
   phases: Phase[];
 }
 
+interface DrivingLog {
+  id: string;
+  date: string;
+  duration: number;
+  notes: string | null;
+  weather: string | null;
+  roadTypes: string | null;
+}
+
 export default function DriverDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const [driver, setDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"training" | "notes">("training");
+  const [activeTab, setActiveTab] = useState<"training" | "notes" | "driving">("training");
+  const [drivingLogs, setDrivingLogs] = useState<DrivingLog[]>([]);
+  const [showLogForm, setShowLogForm] = useState(false);
+  const [selectedLogDate, setSelectedLogDate] = useState<Date | null>(null);
 
   useEffect(() => {
     fetchDriver();
+    fetchDrivingLogs();
   }, [id]);
 
   const fetchDriver = async () => {
@@ -66,6 +81,46 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
       setLoading(false);
     }
   };
+
+  const fetchDrivingLogs = async () => {
+    try {
+      const res = await fetch(`/api/driving-logs?driverId=${id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setDrivingLogs(data);
+      }
+    } catch (error) {
+      console.error("Error fetching driving logs:", error);
+    }
+  };
+
+  const handleAddDrivingLog = async (data: {
+    date: string;
+    duration: number;
+    notes: string;
+    weather: string;
+    roadTypes: string;
+  }) => {
+    try {
+      const res = await fetch("/api/driving-logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ driverId: id, ...data }),
+      });
+      if (res.ok) {
+        await fetchDrivingLogs();
+        setShowLogForm(false);
+        setSelectedLogDate(null);
+      }
+    } catch (error) {
+      console.error("Error adding driving log:", error);
+    }
+  };
+
+  // Calculate total driving time
+  const totalDrivingMinutes = drivingLogs.reduce((sum, log) => sum + log.duration, 0);
+  const totalDrivingHours = Math.floor(totalDrivingMinutes / 60);
+  const remainingMinutes = totalDrivingMinutes % 60;
 
   const handleTaskStatusChange = async (taskId: string, status: string) => {
     try {
@@ -201,33 +256,43 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
 
       {/* Tabs */}
       <div className="px-4 mb-4">
-        <div className="flex gap-2 p-1 rounded-xl bg-dashboard/80">
+        <div className="flex gap-1 p-1 rounded-xl bg-dashboard/80">
           <button
             onClick={() => setActiveTab("training")}
-            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all tap-target ${
+            className={`flex-1 py-2.5 px-2 rounded-lg text-xs font-medium transition-all tap-target ${
               activeTab === "training"
                 ? "bg-sky-blue text-white"
                 : "text-chrome/60 hover:text-chrome"
             }`}
           >
-            Training Phases
+            Training
+          </button>
+          <button
+            onClick={() => setActiveTab("driving")}
+            className={`flex-1 py-2.5 px-2 rounded-lg text-xs font-medium transition-all tap-target ${
+              activeTab === "driving"
+                ? "bg-sky-blue text-white"
+                : "text-chrome/60 hover:text-chrome"
+            }`}
+          >
+            Driving Log
           </button>
           <button
             onClick={() => setActiveTab("notes")}
-            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all tap-target ${
+            className={`flex-1 py-2.5 px-2 rounded-lg text-xs font-medium transition-all tap-target ${
               activeTab === "notes"
                 ? "bg-sky-blue text-white"
                 : "text-chrome/60 hover:text-chrome"
             }`}
           >
-            Notes & Feedback
+            Notes
           </button>
         </div>
       </div>
 
       {/* Tab Content */}
       <div className="px-4">
-        {activeTab === "training" ? (
+        {activeTab === "training" && (
           <div className="space-y-3">
             {driver.phases
               .sort((a, b) => a.orderIndex - b.orderIndex)
@@ -244,7 +309,71 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                 />
               ))}
           </div>
-        ) : (
+        )}
+
+        {activeTab === "driving" && (
+          <div className="space-y-4">
+            {/* Driving Stats */}
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-chrome flex items-center gap-2">
+                  <Car size={18} className="text-sky-blue" />
+                  Total Driving Time
+                </h3>
+                <button
+                  onClick={() => {
+                    setSelectedLogDate(new Date());
+                    setShowLogForm(true);
+                  }}
+                  className="btn btn-primary py-2 px-3 text-sm"
+                >
+                  <Plus size={16} />
+                  Log Session
+                </button>
+              </div>
+              <div className="text-center py-4">
+                <div className="text-4xl font-bold text-chrome">
+                  {totalDrivingHours}
+                  <span className="text-lg text-chrome/60">h</span>
+                  {" "}
+                  {remainingMinutes}
+                  <span className="text-lg text-chrome/60">m</span>
+                </div>
+                <p className="text-sm text-chrome/50 mt-2">
+                  {drivingLogs.length} session{drivingLogs.length !== 1 ? "s" : ""} logged
+                </p>
+              </div>
+            </div>
+
+            {/* Log Form */}
+            {showLogForm && (
+              <DrivingLogForm
+                driverId={id}
+                initialDate={selectedLogDate || undefined}
+                onSubmit={handleAddDrivingLog}
+                onCancel={() => {
+                  setShowLogForm(false);
+                  setSelectedLogDate(null);
+                }}
+              />
+            )}
+
+            {/* Calendar */}
+            <div className="card p-4">
+              <DrivingCalendar
+                logs={drivingLogs}
+                onDateClick={(date, logs) => {
+                  if (logs.length === 0) {
+                    setSelectedLogDate(date);
+                    setShowLogForm(true);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === "notes" && (
           <div className="space-y-4">
             {/* Recent Completions */}
             {recentCompletions.length > 0 && (
