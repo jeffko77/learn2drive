@@ -9,6 +9,7 @@ interface Task {
   id: string;
   title: string;
   description: string | null;
+  teachingNotes?: string | null;
   orderIndex: number;
   progress: {
     status: string;
@@ -100,6 +101,7 @@ export function PhaseAccordion({
                   id={task.id}
                   title={task.title}
                   description={task.description}
+                  teachingNotes={task.teachingNotes}
                   status={(task.progress?.status as "not_started" | "in_progress" | "completed") || "not_started"}
                   notes={task.progress?.notes}
                   feedback={task.progress?.feedback}

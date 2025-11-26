@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { trainingPhases } from "@/lib/seed-data";
+import { findTeachingNotes } from "@/lib/teaching-notes";
 
 export async function GET() {
   try {
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
               create: phase.tasks.map((task, taskIndex) => ({
                 title: task.title,
                 description: task.description,
+                teachingNotes: findTeachingNotes(task.title),
                 orderIndex: taskIndex,
               })),
             },

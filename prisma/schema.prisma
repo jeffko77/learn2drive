@@ -54,13 +54,14 @@ model Phase {
 }
 
 model Task {
-  id          String   @id @default(cuid())
-  phaseId     String   @map("phase_id")
-  title       String
-  description String?
-  orderIndex  Int      @map("order_index")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  phaseId       String   @map("phase_id")
+  title         String
+  description   String?
+  teachingNotes String?  @map("teaching_notes") @db.Text
+  orderIndex    Int      @map("order_index")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   phase    Phase     @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   progress Progress?

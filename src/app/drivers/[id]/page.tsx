@@ -16,6 +16,7 @@ interface Task {
   id: string;
   title: string;
   description: string | null;
+  teachingNotes?: string | null;
   orderIndex: number;
   progress: {
     status: string;

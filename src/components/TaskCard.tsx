@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Circle, Clock, MessageSquare, ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
+import { Check, Circle, Clock, MessageSquare, ChevronDown, ChevronUp, MessageCircle, BookOpen } from "lucide-react";
 
 interface TaskCardProps {
   id: string;
   title: string;
   description?: string | null;
+  teachingNotes?: string | null;
   status: "not_started" | "in_progress" | "completed";
   notes?: string | null;
   feedback?: string | null;
@@ -19,6 +20,7 @@ export function TaskCard({
   id,
   title,
   description,
+  teachingNotes,
   status,
   notes,
   feedback,
@@ -155,19 +157,32 @@ export function TaskCard({
       {expanded && (
         <div className="mt-4 pt-4 border-t border-chrome/10 animate-fade-in">
           <div className="space-y-4">
+            {/* Teaching Notes - Read Only */}
+            {teachingNotes && (
+              <div className="p-3 rounded-lg bg-signal-green/10 border border-signal-green/20">
+                <label className="block text-sm font-medium text-signal-green mb-2 flex items-center gap-2">
+                  <BookOpen size={14} />
+                  Teaching Notes
+                </label>
+                <p className="text-sm text-chrome/80 whitespace-pre-wrap">{teachingNotes}</p>
+              </div>
+            )}
+
+            {/* Session Notes - Editable */}
             <div>
               <label className="block text-sm font-medium text-chrome/80 mb-2">
                 <MessageSquare size={14} className="inline mr-2" />
-                Notes / Observations
+                Session Notes
               </label>
               <textarea
                 value={localNotes}
                 onChange={(e) => handleNotesChange(e.target.value)}
-                placeholder="Add notes about this skill..."
+                placeholder="Add notes about this session..."
                 className="input min-h-[80px] resize-none"
               />
             </div>
 
+            {/* Instructor Feedback - Editable */}
             <div>
               <label className="block text-sm font-medium text-chrome/80 mb-2">
                 Instructor Feedback
