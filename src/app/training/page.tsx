@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { PhaseAccordion } from "@/components/PhaseAccordion";
 import { GraduatedProgressBar } from "@/components/GraduatedProgressBar";
+import { BirthdayCountdown } from "@/components/BirthdayCountdown";
 import { Users, ChevronDown, CheckCircle2, Clock, Circle, BookOpen } from "lucide-react";
 import Link from "next/link";
 
@@ -31,6 +32,7 @@ interface Phase {
 interface Driver {
   id: string;
   name: string;
+  birthDate: string;
   phases: Phase[];
 }
 
@@ -221,6 +223,13 @@ export default function TrainingPage() {
           )}
         </div>
       </div>
+
+      {/* Birthday Countdown */}
+      {selectedDriver && (
+        <div className="px-4 mb-4">
+          <BirthdayCountdown birthDate={selectedDriver.birthDate} name={selectedDriver.name} />
+        </div>
+      )}
 
       {/* Progress Stats */}
       <div className="px-4 mb-4">
