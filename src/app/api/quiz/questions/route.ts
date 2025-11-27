@@ -16,14 +16,38 @@ export async function GET(request: NextRequest) {
       
       if (topic) {
         questions = await prisma.$queryRaw`
-          SELECT * FROM quiz_questions 
+          SELECT 
+            id,
+            topic,
+            question_text AS "questionText",
+            option_a AS "optionA",
+            option_b AS "optionB",
+            option_c AS "optionC",
+            option_d AS "optionD",
+            correct_answer AS "correctAnswer",
+            explanation,
+            chapter_reference AS "chapterReference",
+            created_at AS "createdAt"
+          FROM quiz_questions 
           WHERE topic = ${topic}
           ORDER BY RANDOM() 
           LIMIT ${count}
         `;
       } else {
         questions = await prisma.$queryRaw`
-          SELECT * FROM quiz_questions 
+          SELECT 
+            id,
+            topic,
+            question_text AS "questionText",
+            option_a AS "optionA",
+            option_b AS "optionB",
+            option_c AS "optionC",
+            option_d AS "optionD",
+            correct_answer AS "correctAnswer",
+            explanation,
+            chapter_reference AS "chapterReference",
+            created_at AS "createdAt"
+          FROM quiz_questions 
           ORDER BY RANDOM() 
           LIMIT ${count}
         `;
