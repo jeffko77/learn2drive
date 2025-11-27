@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
-import { Trophy, BookOpen, Clock, Target, Users, ChevronRight, Award, Zap, Car, ClipboardCheck } from "lucide-react";
+import { Trophy, BookOpen, Clock, Target, Users, ChevronRight, Award, Zap, Car, ClipboardCheck, Signpost } from "lucide-react";
 import Link from "next/link";
 
 interface Topic {
@@ -122,14 +122,23 @@ export default function QuizPage() {
       {/* Test Type Selection */}
       <div className="px-4 mb-6">
         <h2 className="text-lg font-semibold text-chrome mb-4">Test Types</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {/* Written Test Card */}
           <Link href="/quiz#written" className="card p-4 bg-gradient-to-br from-highway-orange/20 to-highway-orange/5 border-highway-orange/30 hover:border-highway-orange/50 transition-all">
             <div className="p-2 rounded-lg bg-highway-orange/30 w-fit mb-3">
               <BookOpen className="w-5 h-5 text-highway-orange" />
             </div>
-            <h3 className="font-semibold text-chrome mb-1">Written Test</h3>
-            <p className="text-xs text-chrome/60">DMV knowledge prep</p>
+            <h3 className="font-semibold text-chrome mb-1 text-sm">Written Test</h3>
+            <p className="text-xs text-chrome/60">DMV knowledge</p>
+          </Link>
+
+          {/* Road Signs Test Card */}
+          <Link href="/road-signs" className="card p-4 bg-gradient-to-br from-sky-blue/20 to-sky-blue/5 border-sky-blue/30 hover:border-sky-blue/50 transition-all">
+            <div className="p-2 rounded-lg bg-sky-blue/30 w-fit mb-3">
+              <Signpost className="w-5 h-5 text-sky-blue" />
+            </div>
+            <h3 className="font-semibold text-chrome mb-1 text-sm">Road Signs</h3>
+            <p className="text-xs text-chrome/60">Sign recognition</p>
           </Link>
 
           {/* Driving Test Card */}
@@ -137,8 +146,8 @@ export default function QuizPage() {
             <div className="p-2 rounded-lg bg-signal-green/30 w-fit mb-3">
               <Car className="w-5 h-5 text-signal-green" />
             </div>
-            <h3 className="font-semibold text-chrome mb-1">Driving Test</h3>
-            <p className="text-xs text-chrome/60">Behind-the-wheel eval</p>
+            <h3 className="font-semibold text-chrome mb-1 text-sm">Driving Test</h3>
+            <p className="text-xs text-chrome/60">Behind-wheel eval</p>
           </Link>
         </div>
       </div>

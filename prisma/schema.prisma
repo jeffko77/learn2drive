@@ -15,10 +15,11 @@ model Driver {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   
-  phases              Phase[]
-  quizAttempts        QuizAttempt[]
-  drivingLogs         DrivingLog[]
-  drivingTestAttempts DrivingTestAttempt[]
+  phases               Phase[]
+  quizAttempts         QuizAttempt[]
+  drivingLogs          DrivingLog[]
+  drivingTestAttempts  DrivingTestAttempt[]
+  roadSignTestAttempts RoadSignTestAttempt[]
 
   @@map("drivers")
 }
@@ -187,4 +188,68 @@ model DrivingTestEvaluation {
   criteria DrivingTestCriteria @relation(fields: [criteriaId], references: [id], onDelete: Cascade)
 
   @@map("driving_test_evaluations")
+}
+
+// Road Sign Test Models
+model RoadSignCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  orderIndex  Int      @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  signs RoadSign[]
+
+  @@map("road_sign_categories")
+}
+
+model RoadSign {
+  id              String   @id @default(cuid())
+  categoryId      String   @map("category_id")
+  signName        String   @map("sign_name")
+  signMeaning     String   @map("sign_meaning") @db.Text
+  shape           String
+  colorScheme     String   @map("color_scheme")
+  imageUrl        String?  @map("image_url")
+  additionalNotes String?  @map("additional_notes") @db.Text
+  orderIndex      Int      @map("order_index")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  category RoadSignCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  answers  RoadSignTestAnswer[]
+
+  @@map("road_signs")
+}
+
+model RoadSignTestAttempt {
+  id             String   @id @default(cuid())
+  driverId       String   @map("driver_id")
+  testDate       DateTime @default(now()) @map("test_date")
+  totalQuestions Int      @map("total_questions")
+  correctAnswers Int      @map("correct_answers")
+  percentage     Float?
+  passed         Boolean?
+  timeTaken      Int?     @map("time_taken") // seconds
+  testMode       String   @default("all") @map("test_mode") // all, category, timed, practice
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  driver  Driver               @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  answers RoadSignTestAnswer[]
+
+  @@map("road_sign_test_attempts")
+}
+
+model RoadSignTestAnswer {
+  id             String   @id @default(cuid())
+  attemptId      String   @map("attempt_id")
+  signId         String   @map("sign_id")
+  selectedAnswer String?  @map("selected_answer")
+  isCorrect      Boolean  @map("is_correct")
+  timeSpent      Int?     @map("time_spent") // seconds on this question
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  attempt RoadSignTestAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  sign    RoadSign            @relation(fields: [signId], references: [id], onDelete: Cascade)
+
+  @@map("road_sign_test_answers")
 }
