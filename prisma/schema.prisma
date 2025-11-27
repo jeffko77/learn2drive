@@ -15,9 +15,10 @@ model Driver {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   
-  phases       Phase[]
-  quizAttempts QuizAttempt[]
-  drivingLogs  DrivingLog[]
+  phases              Phase[]
+  quizAttempts        QuizAttempt[]
+  drivingLogs         DrivingLog[]
+  drivingTestAttempts DrivingTestAttempt[]
 
   @@map("drivers")
 }
@@ -127,4 +128,63 @@ model QuizAnswer {
   question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("quiz_answers")
+}
+
+// Driving Test Models
+model DrivingTestCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  orderIndex  Int      @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  criteria DrivingTestCriteria[]
+
+  @@map("driving_test_categories")
+}
+
+model DrivingTestCriteria {
+  id              String   @id @default(cuid())
+  categoryId      String   @map("category_id")
+  criteriaName    String   @map("criteria_name")
+  evaluationGuide String   @map("evaluation_guide") @db.Text
+  maxPoints       Int      @default(5) @map("max_points")
+  orderIndex      Int      @map("order_index")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  category    DrivingTestCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  evaluations DrivingTestEvaluation[]
+
+  @@map("driving_test_criteria")
+}
+
+model DrivingTestAttempt {
+  id               String   @id @default(cuid())
+  driverId         String   @map("driver_id")
+  testDate         DateTime @default(now()) @map("test_date")
+  totalScore       Int?     @map("total_score")
+  maxPossibleScore Int?     @map("max_possible_score")
+  passed           Boolean?
+  evaluatorName    String?  @map("evaluator_name")
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  driver      Driver                  @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  evaluations DrivingTestEvaluation[]
+
+  @@map("driving_test_attempts")
+}
+
+model DrivingTestEvaluation {
+  id              String   @id @default(cuid())
+  attemptId       String   @map("attempt_id")
+  criteriaId      String   @map("criteria_id")
+  pointsDeducted  Int      @default(0) @map("points_deducted")
+  evaluatorNotes  String?  @map("evaluator_notes") @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  attempt  DrivingTestAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  criteria DrivingTestCriteria @relation(fields: [criteriaId], references: [id], onDelete: Cascade)
+
+  @@map("driving_test_evaluations")
 }

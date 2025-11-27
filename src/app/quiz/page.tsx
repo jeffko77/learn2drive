@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
-import { Trophy, BookOpen, Clock, Target, Users, ChevronRight, Award, Zap } from "lucide-react";
+import { Trophy, BookOpen, Clock, Target, Users, ChevronRight, Award, Zap, Car, ClipboardCheck } from "lucide-react";
 import Link from "next/link";
 
 interface Topic {
@@ -119,10 +119,34 @@ export default function QuizPage() {
         </div>
       )}
 
+      {/* Test Type Selection */}
+      <div className="px-4 mb-6">
+        <h2 className="text-lg font-semibold text-chrome mb-4">Test Types</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {/* Written Test Card */}
+          <Link href="/quiz#written" className="card p-4 bg-gradient-to-br from-highway-orange/20 to-highway-orange/5 border-highway-orange/30 hover:border-highway-orange/50 transition-all">
+            <div className="p-2 rounded-lg bg-highway-orange/30 w-fit mb-3">
+              <BookOpen className="w-5 h-5 text-highway-orange" />
+            </div>
+            <h3 className="font-semibold text-chrome mb-1">Written Test</h3>
+            <p className="text-xs text-chrome/60">DMV knowledge prep</p>
+          </Link>
+
+          {/* Driving Test Card */}
+          <Link href="/driving-test" className="card p-4 bg-gradient-to-br from-signal-green/20 to-signal-green/5 border-signal-green/30 hover:border-signal-green/50 transition-all">
+            <div className="p-2 rounded-lg bg-signal-green/30 w-fit mb-3">
+              <Car className="w-5 h-5 text-signal-green" />
+            </div>
+            <h3 className="font-semibold text-chrome mb-1">Driving Test</h3>
+            <p className="text-xs text-chrome/60">Behind-the-wheel eval</p>
+          </Link>
+        </div>
+      </div>
+
       {totalQuestions > 0 && (
         <>
           {/* Quick Start */}
-          <div className="px-4 mb-6">
+          <div className="px-4 mb-6" id="written">
             <div className="card p-4 bg-gradient-to-br from-highway-orange/20 to-highway-orange/5 border-highway-orange/30">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
