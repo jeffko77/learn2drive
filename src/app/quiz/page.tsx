@@ -76,7 +76,7 @@ export default function QuizPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen pb-24 relative z-10 flex items-center justify-center">
+      <main className="min-h-screen safe-bottom relative z-10 flex items-center justify-center">
         <div className="spinner" />
         <Navigation />
       </main>
@@ -86,7 +86,7 @@ export default function QuizPage() {
   const totalQuestions = topics.reduce((acc, t) => acc + t.count, 0);
 
   return (
-    <main className="min-h-screen pb-24 relative z-10">
+    <main className="min-h-screen safe-bottom relative z-10">
       {/* Header */}
       <div className="px-4 pt-8 pb-4">
         <div className="flex items-center gap-3 mb-2">

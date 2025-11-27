@@ -120,7 +120,7 @@ function QuizContent() {
 
   if (loading) {
     return (
-      <main className="min-h-screen pb-24 relative z-10 flex items-center justify-center">
+      <main className="min-h-screen safe-bottom relative z-10 flex items-center justify-center">
         <div className="spinner" />
         <Navigation />
       </main>
@@ -131,7 +131,7 @@ function QuizContent() {
     const percentage = Math.round((result.score / result.total) * 100);
     
     return (
-      <main className="min-h-screen pb-24 relative z-10">
+      <main className="min-h-screen safe-bottom relative z-10">
         <div className="px-4 pt-8">
           <Link
             href="/quiz"
@@ -266,7 +266,7 @@ function QuizContent() {
 
   if (!started) {
     return (
-      <main className="min-h-screen pb-24 relative z-10">
+      <main className="min-h-screen safe-bottom relative z-10">
         <div className="px-4 pt-8">
           <Link
             href="/quiz"
@@ -374,7 +374,7 @@ function QuizContent() {
   }
 
   return (
-    <main className="min-h-screen pb-24 relative z-10">
+    <main className="min-h-screen safe-bottom relative z-10">
       <div className="px-4 pt-8">
         <QuizCard
           questions={questions}
@@ -392,7 +392,7 @@ function QuizContent() {
 export default function QuizStartPage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen pb-24 relative z-10 flex items-center justify-center">
+      <main className="min-h-screen safe-bottom relative z-10 flex items-center justify-center">
         <div className="spinner" />
         <Navigation />
       </main>

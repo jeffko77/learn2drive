@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { PhaseAccordion } from "@/components/PhaseAccordion";
-import { ProgressBar } from "@/components/ProgressBar";
+import { GraduatedProgressBar } from "@/components/GraduatedProgressBar";
 import { Users, ChevronDown, CheckCircle2, Clock, Circle, BookOpen } from "lucide-react";
 import Link from "next/link";
 
@@ -110,7 +110,7 @@ export default function TrainingPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen pb-24 relative z-10 flex items-center justify-center">
+      <main className="min-h-screen safe-bottom relative z-10 flex items-center justify-center">
         <div className="spinner" />
         <Navigation />
       </main>
@@ -119,7 +119,7 @@ export default function TrainingPage() {
 
   if (drivers.length === 0) {
     return (
-      <main className="min-h-screen pb-24 relative z-10">
+      <main className="min-h-screen safe-bottom relative z-10">
         <div className="px-4 pt-8">
           <h1 className="text-2xl font-bold text-chrome mb-2">Training</h1>
           <p className="text-chrome/60 text-sm">Track driving skills progress</p>
@@ -166,7 +166,7 @@ export default function TrainingPage() {
   };
 
   return (
-    <main className="min-h-screen pb-24 relative z-10">
+    <main className="min-h-screen safe-bottom relative z-10">
       {/* Header */}
       <div className="px-4 pt-8 pb-4">
         <h1 className="text-2xl font-bold text-chrome mb-2">Training</h1>
@@ -225,7 +225,14 @@ export default function TrainingPage() {
       {/* Progress Stats */}
       <div className="px-4 mb-4">
         <div className="card p-4">
-          <ProgressBar value={completedTasks.length} max={allTasks.length} size="md" />
+          <GraduatedProgressBar 
+            phases={selectedDriver?.phases.map(phase => ({
+              id: phase.id,
+              title: phase.title,
+              completedTasks: phase.tasks.filter(t => t.progress?.status === "completed").length,
+              totalTasks: phase.tasks.length,
+            })) || []}
+          />
         </div>
       </div>
 

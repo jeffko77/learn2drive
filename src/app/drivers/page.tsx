@@ -53,7 +53,7 @@ export default function DriversPage() {
   );
 
   return (
-    <main className="min-h-screen pb-24 relative z-10">
+    <main className="min-h-screen safe-bottom relative z-10">
       {/* Header */}
       <div className="px-4 pt-8 pb-4">
         <div className="flex items-center justify-between mb-6">

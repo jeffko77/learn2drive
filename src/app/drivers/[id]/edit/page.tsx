@@ -129,7 +129,7 @@ export default function EditDriverPage({ params }: { params: Promise<{ id: strin
 
   if (loading) {
     return (
-      <main className="min-h-screen pb-24 relative z-10 flex items-center justify-center">
+      <main className="min-h-screen safe-bottom relative z-10 flex items-center justify-center">
         <div className="spinner" />
         <Navigation />
       </main>
@@ -137,7 +137,7 @@ export default function EditDriverPage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <main className="min-h-screen pb-24 relative z-10">
+    <main className="min-h-screen safe-bottom relative z-10">
       {/* Header */}
       <div className="px-4 pt-8 pb-4">
         <Link

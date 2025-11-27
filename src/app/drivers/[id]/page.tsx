@@ -180,7 +180,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
 
   if (loading) {
     return (
-      <main className="min-h-screen pb-24 relative z-10 flex items-center justify-center">
+      <main className="min-h-screen safe-bottom relative z-10 flex items-center justify-center">
         <div className="spinner" />
       </main>
     );

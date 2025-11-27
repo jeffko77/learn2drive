@@ -80,7 +80,7 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen pb-24 relative z-10">
+    <main className="min-h-screen safe-bottom relative z-10">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-blue/20 via-transparent to-highway-orange/20" />
