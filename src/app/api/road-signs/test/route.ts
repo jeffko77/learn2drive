@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
         colorScheme: sign.colorScheme,
         categoryName: sign.category.name,
         additionalNotes: sign.additionalNotes,
+        imageUrl: sign.imageUrl,
         options: options.map((opt, index) => ({
           letter: String.fromCharCode(65 + index), // A, B, C, D
           text: opt.text,

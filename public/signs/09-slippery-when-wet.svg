@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+  <!-- Yellow diamond warning sign -->
+  <polygon points="50,5 95,50 50,95 5,50" fill="#FFCC00" stroke="#000000" stroke-width="2"/>
+  <!-- Car with skid marks -->
+  <rect x="35" y="35" width="30" height="12" rx="3" fill="#000000"/>
+  <rect x="38" y="38" width="8" height="6" fill="#FFCC00"/>
+  <rect x="54" y="38" width="8" height="6" fill="#FFCC00"/>
+  <circle cx="42" cy="49" r="4" fill="#000000"/>
+  <circle cx="58" cy="49" r="4" fill="#000000"/>
+  <!-- Wavy skid marks -->
+  <path d="M30,60 Q35,55 40,60 Q45,65 50,60 Q55,55 60,60 Q65,65 70,60" fill="none" stroke="#000000" stroke-width="3"/>
+  <path d="M25,72 Q30,67 35,72 Q40,77 45,72 Q50,67 55,72 Q60,77 65,72 Q70,67 75,72" fill="none" stroke="#000000" stroke-width="3"/>
+</svg>

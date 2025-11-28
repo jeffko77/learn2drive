@@ -45,6 +45,7 @@ export async function POST() {
               signMeaning: sign.signMeaning,
               shape: sign.shape,
               colorScheme: sign.colorScheme,
+              imageUrl: sign.imageUrl,
               additionalNotes: sign.additionalNotes,
               orderIndex: sign.orderIndex,
             })),

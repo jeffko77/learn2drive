@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+  <!-- Yellow circle (unique shape for railroad warning) -->
+  <circle cx="50" cy="50" r="45" fill="#FFCC00" stroke="#000000" stroke-width="2"/>
+  <!-- Large X with R on each side -->
+  <line x1="20" y1="20" x2="80" y2="80" stroke="#000000" stroke-width="8"/>
+  <line x1="80" y1="20" x2="20" y2="80" stroke="#000000" stroke-width="8"/>
+  <!-- R letters -->
+  <text x="25" y="55" font-family="Arial Black, sans-serif" font-size="20" font-weight="bold" fill="#000000">R</text>
+  <text x="65" y="55" font-family="Arial Black, sans-serif" font-size="20" font-weight="bold" fill="#000000">R</text>
+</svg>

@@ -35,6 +35,7 @@ interface SignQuestion {
   colorScheme: string;
   categoryName: string;
   additionalNotes: string | null;
+  imageUrl: string | null;
   options: SignOption[];
   correctAnswer: string;
 }
@@ -381,9 +382,19 @@ function RoadSignsTestContent() {
       <div className="px-4 pt-4 pb-24">
         {/* Sign Display */}
         <div className="card p-6 mb-6 text-center">
-          <div className="text-4xl mb-3">
-            {getShapeEmoji(currentQuestion.shape)}
-          </div>
+          {currentQuestion.imageUrl ? (
+            <div className="mb-4">
+              <img 
+                src={currentQuestion.imageUrl} 
+                alt={currentQuestion.signName}
+                className="w-32 h-32 mx-auto object-contain"
+              />
+            </div>
+          ) : (
+            <div className="text-4xl mb-3">
+              {getShapeEmoji(currentQuestion.shape)}
+            </div>
+          )}
           <h2 className="text-xl font-bold text-chrome mb-2">
             {currentQuestion.signName}
           </h2>

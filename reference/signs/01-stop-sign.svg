@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+  <!-- Red octagon stop sign -->
+  <polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" fill="#CC0000" stroke="#FFFFFF" stroke-width="3"/>
+  <text x="50" y="58" font-family="Arial Black, sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">STOP</text>
+</svg>

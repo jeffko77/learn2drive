@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+  <!-- Yellow diamond warning sign -->
+  <polygon points="50,5 95,50 50,95 5,50" fill="#FFCC00" stroke="#000000" stroke-width="2"/>
+  <!-- Traffic signal -->
+  <rect x="40" y="25" width="20" height="50" rx="3" fill="#000000"/>
+  <!-- Red light -->
+  <circle cx="50" cy="35" r="6" fill="#CC0000"/>
+  <!-- Yellow light -->
+  <circle cx="50" cy="50" r="6" fill="#FFCC00" stroke="#000000" stroke-width="1"/>
+  <!-- Green light -->
+  <circle cx="50" cy="65" r="6" fill="#00AA00"/>
+  <!-- Post -->
+  <rect x="47" y="75" width="6" height="10" fill="#000000"/>
+</svg>
