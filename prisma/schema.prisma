@@ -1,0 +1,103 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Driver {
+  id          String   @id @default(cuid())
+  name        String
+  birthDate   DateTime
+  startDate   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  progress    SkillProgress[]
+  drivingLogs DrivingLog[]
+  notes       DriverNote[]
+  quizResults QuizResult[]
+}
+
+model Phase {
+  id          String   @id @default(cuid())
+  orderIndex  Int      @unique
+  title       String
+  description String
+  skills      Skill[]
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  phaseId     String
+  orderIndex  Int
+  title       String
+  description String
+  phase       Phase    @relation(fields: [phaseId], references: [id])
+  progress    SkillProgress[]
+
+  @@unique([phaseId, orderIndex])
+}
+
+model SkillProgress {
+  id            String    @id @default(cuid())
+  driverId      String
+  skillId       String
+  status        String    @default("not_started") // not_started | in_progress | completed
+  completedAt   DateTime?
+  notes         String?
+  feedback      String?
+  updatedAt     DateTime  @updatedAt
+
+  driver        Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  skill         Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([driverId, skillId])
+}
+
+model DrivingLog {
+  id        String   @id @default(cuid())
+  driverId  String
+  date      DateTime @default(now())
+  duration  Int      // minutes
+  location  String?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+}
+
+model DriverNote {
+  id        String   @id @default(cuid())
+  driverId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+}
+
+model QuizQuestion {
+  id            String   @id @default(cuid())
+  topic         String
+  questionText  String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer String   // A, B, C, or D
+  explanation   String?
+}
+
+model QuizResult {
+  id         String   @id @default(cuid())
+  driverId   String?
+  score      Int
+  total      Int
+  topic      String?  // null = practice test
+  createdAt  DateTime @default(now())
+
+  driver     Driver?  @relation(fields: [driverId], references: [id], onDelete: SetNull)
+}
