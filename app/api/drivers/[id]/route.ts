@@ -9,36 +9,32 @@ export async function GET(_req: NextRequest, { params }: Params) {
     const driver = await prisma.driver.findUnique({
       where: { id },
       include: {
-        progress: {
-          include: { skill: { include: { phase: true } } },
-        },
         drivingLogs: { orderBy: { date: 'desc' } },
-        notes: { orderBy: { createdAt: 'desc' } },
       },
     })
 
     if (!driver) return NextResponse.json({ error: 'Driver not found' }, { status: 404 })
 
     const phases = await prisma.phase.findMany({
+      where: { driverId: id },
       orderBy: { orderIndex: 'asc' },
-      include: { skills: { orderBy: { orderIndex: 'asc' } } },
+      include: { skills: { orderBy: { orderIndex: 'asc' }, include: { progress: true } } },
     })
-
-    const progressMap = new Map(driver.progress.map((progressEntry) => [progressEntry.skillId, progressEntry]))
 
     const phasesWithProgress = phases.map((phase) => ({
       ...phase,
       skills: phase.skills.map((skill) => ({
         ...skill,
-        progress: progressMap.get(skill.id) || null,
+        progress: skill.progress || null,
       })),
-      completed: phase.skills.filter((s) => progressMap.get(s.id)?.status === 'completed').length,
-      inProgress: phase.skills.filter((s) => progressMap.get(s.id)?.status === 'in_progress').length,
+      completed: phase.skills.filter((s) => s.progress?.status === 'completed').length,
+      inProgress: phase.skills.filter((s) => s.progress?.status === 'in_progress').length,
     }))
 
-    const totalSkills = phases.reduce((acc, p) => acc + p.skills.length, 0)
-    const completed = driver.progress.filter((p) => p.status === 'completed').length
-    const inProgress = driver.progress.filter((p) => p.status === 'in_progress').length
+    const allSkills = phases.flatMap((phase) => phase.skills)
+    const totalSkills = allSkills.length
+    const completed = allSkills.filter((skill) => skill.progress?.status === 'completed').length
+    const inProgress = allSkills.filter((skill) => skill.progress?.status === 'in_progress').length
 
     return NextResponse.json({
       driver: {
@@ -49,8 +45,11 @@ export async function GET(_req: NextRequest, { params }: Params) {
       },
       stats: { totalSkills, completed, inProgress, remaining: totalSkills - completed - inProgress },
       phases: phasesWithProgress,
-      drivingLogs: driver.drivingLogs,
-      notes: driver.notes,
+      drivingLogs: driver.drivingLogs.map((log) => ({
+        ...log,
+        location: log.roadTypes,
+      })),
+      notes: [],
     })
   } catch (error) {
     console.error('GET /api/drivers/[id] error:', error)

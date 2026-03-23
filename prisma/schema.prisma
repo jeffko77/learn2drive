@@ -9,95 +9,107 @@ datasource db {
 }
 
 model Driver {
-  id          String   @id @default(cuid())
+  id          String      @id
   name        String
-  birthDate   DateTime
-  startDate   DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  birthDate   DateTime    @map("birth_date")
+  startDate   DateTime    @map("start_date")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
 
-  progress    SkillProgress[]
+  phases      Phase[]
   drivingLogs DrivingLog[]
-  notes       DriverNote[]
   quizResults QuizResult[]
+
+  @@map("drivers")
 }
 
 model Phase {
-  id          String   @id @default(cuid())
-  orderIndex  Int      @unique
+  id          String   @id
+  driverId    String   @map("driver_id")
+  orderIndex  Int      @map("order_index")
   title       String
-  description String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  driver      Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
   skills      Skill[]
+
+  @@map("phases")
 }
 
 model Skill {
-  id          String   @id @default(cuid())
-  phaseId     String
-  orderIndex  Int
+  id          String   @id
+  phaseId     String   @map("phase_id")
+  orderIndex  Int      @map("order_index")
   title       String
-  description String
-  phase       Phase    @relation(fields: [phaseId], references: [id])
-  progress    SkillProgress[]
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  teachingNotes String? @map("teaching_notes")
 
-  @@unique([phaseId, orderIndex])
+  phase       Phase    @relation(fields: [phaseId], references: [id])
+  progress    SkillProgress?
+
+  @@map("tasks")
 }
 
 model SkillProgress {
-  id            String    @id @default(cuid())
-  driverId      String
-  skillId       String
-  status        String    @default("not_started") // not_started | in_progress | completed
-  completedAt   DateTime?
+  id            String    @id
+  skillId       String    @unique @map("task_id")
+  status        String    @default("not_started")
+  completedAt   DateTime? @map("completion_date")
   notes         String?
   feedback      String?
-  updatedAt     DateTime  @updatedAt
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  driver        Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
   skill         Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
-  @@unique([driverId, skillId])
+  @@map("progress")
 }
 
 model DrivingLog {
-  id        String   @id @default(cuid())
-  driverId  String
-  date      DateTime @default(now())
-  duration  Int      // minutes
-  location  String?
+  id        String   @id
+  driverId  String   @map("driver_id")
+  date      DateTime @db.Date
+  duration  Int
   notes     String?
-  createdAt DateTime @default(now())
+  roadTypes String?  @map("road_types")
+  weather   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
-}
 
-model DriverNote {
-  id        String   @id @default(cuid())
-  driverId  String
-  content   String
-  createdAt DateTime @default(now())
-
-  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  @@map("driving_logs")
 }
 
 model QuizQuestion {
-  id            String   @id @default(cuid())
+  id            String   @id
   topic         String
-  questionText  String
-  optionA       String
-  optionB       String
-  optionC       String
-  optionD       String
-  correctAnswer String   // A, B, C, or D
+  questionText  String   @map("question_text")
+  optionA       String   @map("option_a")
+  optionB       String   @map("option_b")
+  optionC       String   @map("option_c")
+  optionD       String   @map("option_d")
+  correctAnswer String   @map("correct_answer")
   explanation   String?
+  chapterReference String? @map("chapter_reference")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("quiz_questions")
 }
 
 model QuizResult {
-  id         String   @id @default(cuid())
-  driverId   String?
+  id         String   @id
+  driverId   String   @map("driver_id")
   score      Int
-  total      Int
-  topic      String?  // null = practice test
-  createdAt  DateTime @default(now())
+  total      Int      @map("total_questions")
+  topic      String?  @map("mode")
+  createdAt  DateTime @default(now()) @map("date_taken")
+  timeTaken  Int?     @map("time_taken")
 
-  driver     Driver?  @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  driver     Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
 }

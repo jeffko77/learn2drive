@@ -12,15 +12,23 @@ export async function POST(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'skillId and status required' }, { status: 400 })
     }
 
+    const skill = await prisma.skill.findFirst({
+      where: { id: skillId, phase: { driverId } },
+      select: { id: true },
+    })
+    if (!skill) {
+      return NextResponse.json({ error: 'Task not found for driver' }, { status: 404 })
+    }
+
     const progress = await prisma.skillProgress.upsert({
-      where: { driverId_skillId: { driverId, skillId } },
+      where: { skillId },
       create: {
-        driverId,
-        skillId,
+        id: crypto.randomUUID(),
         status,
         notes: notes || null,
         feedback: feedback || null,
         completedAt: status === 'completed' ? new Date() : null,
+        skill: { connect: { id: skillId } },
       },
       update: {
         status,

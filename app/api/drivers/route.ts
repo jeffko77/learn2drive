@@ -3,23 +3,22 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    const drivers = await prisma.driver.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        progress: { select: { status: true } },
-      },
-    })
-
-    const totalSkills = await prisma.skill.count()
-
-    const result = drivers.map((driver) => ({
-      id: driver.id,
-      name: driver.name,
-      birthDate: driver.birthDate,
-      startDate: driver.startDate,
-      totalSkills,
-      completed: driver.progress.filter((p) => p.status === 'completed').length,
-      inProgress: driver.progress.filter((p) => p.status === 'in_progress').length,
+    const drivers = await prisma.driver.findMany({ orderBy: { createdAt: 'desc' } })
+    const result = await Promise.all(drivers.map(async (driver) => {
+      const phases = await prisma.phase.findMany({
+        where: { driverId: driver.id },
+        include: { skills: { include: { progress: true } } },
+      })
+      const skills = phases.flatMap((phase) => phase.skills)
+      return {
+        id: driver.id,
+        name: driver.name,
+        birthDate: driver.birthDate,
+        startDate: driver.startDate,
+        totalSkills: skills.length,
+        completed: skills.filter((skill) => skill.progress?.status === 'completed').length,
+        inProgress: skills.filter((skill) => skill.progress?.status === 'in_progress').length,
+      }
     }))
 
     return NextResponse.json(result)
@@ -38,6 +37,7 @@ export async function POST(req: NextRequest) {
 
     const driver = await prisma.driver.create({
       data: {
+        id: crypto.randomUUID(),
         name,
         birthDate: new Date(birthDate),
         startDate: startDate ? new Date(startDate) : new Date(),
