@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx ts-node --compiler-options \"{\"module\":\"CommonJS\"}\" prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.2",
@@ -24,9 +24,10 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   },
   "prisma": {
-    "seed": "npx ts-node --compiler-options \"{\"module\":\"CommonJS\"}\" prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts"
   }
 }
