@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { trainingPhases } from '@/lib/training-phases'
 
 export async function GET() {
   try {
@@ -37,10 +38,23 @@ export async function POST(req: NextRequest) {
 
     const driver = await prisma.driver.create({
       data: {
-        id: crypto.randomUUID(),
         name,
         birthDate: new Date(birthDate),
         startDate: startDate ? new Date(startDate) : new Date(),
+        phases: {
+          create: trainingPhases.map((phase) => ({
+            orderIndex: phase.orderIndex,
+            title: phase.title,
+            description: phase.description,
+            skills: {
+              create: phase.skills.map((skill, index) => ({
+                orderIndex: index + 1,
+                title: skill.title,
+                description: skill.description,
+              })),
+            },
+          })),
+        },
       },
     })
 

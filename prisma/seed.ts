@@ -1,160 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
-
-const phases = [
-  {
-    orderIndex: 1,
-    title: 'Basic Safety & Vehicle Familiarity',
-    description: 'Master these before the car moves',
-    skills: [
-      { title: 'Adjust seat position', description: 'Reach pedals comfortably, see over steering wheel' },
-      { title: 'Adjust all mirrors', description: 'Rearview and both side mirrors' },
-      { title: 'Check seatbelt fits properly', description: 'Across chest and hips' },
-      { title: 'Locate and test turn signals, hazard lights, wipers', description: 'Know location without looking' },
-      { title: 'Find parking brake location and operation', description: 'Engage and release smoothly' },
-      { title: 'Identify gas, brake pedals', description: 'Know pedal positions by feel' },
-      { title: 'Check that doors are properly closed', description: 'All doors secure before moving' },
-      { title: 'Start and turn off engine safely', description: 'Proper startup sequence' },
-      { title: 'Understand gear selector (P-R-N-D)', description: 'Park, Reverse, Neutral, Drive' },
-      { title: 'Operate windshield wipers and lights', description: 'All wiper speeds, headlights, high beams' },
-      { title: 'Locate and use horn', description: 'Appropriate horn use situations' },
-      { title: 'Understand dashboard warning lights', description: 'Identify critical warning indicators' },
-      { title: 'Check fuel level and understand gauges', description: 'Read fuel, temperature, and other gauges' },
-    ],
+const prisma = new PrismaClient({
+  datasources: {
+    db: { url: process.env.DIRECT_URL || process.env.DATABASE_URL },
   },
-  {
-    orderIndex: 2,
-    title: 'Fundamental Driving Skills',
-    description: 'Empty parking lot practice',
-    skills: [
-      { title: 'Smooth starts from complete stop', description: 'Gradual, controlled acceleration' },
-      { title: 'Progressive braking to smooth stops', description: 'No jerking, stops before the line' },
-      { title: 'Straight line driving at consistent speed', description: 'Maintain lane position' },
-      { title: 'Gentle steering inputs and corrections', description: 'Small corrections, no overcorrecting' },
-      { title: 'Proper following distance judgment (3-second rule)', description: 'Maintain safe distance' },
-      { title: 'Forward parking between lines', description: 'Center in space, wheels straight' },
-      { title: 'Reverse parking (backing into space)', description: 'Use mirrors and backup camera' },
-      { title: 'Parallel parking basics', description: 'Reference points and timing' },
-      { title: 'Angle parking (45-degree spaces)', description: 'Enter and exit safely' },
-      { title: 'Three-point turn', description: 'Safe execution in tight space' },
-      { title: 'Backing in straight line', description: 'Check mirrors, slow and controlled' },
-    ],
-  },
-  {
-    orderIndex: 3,
-    title: 'Traffic Navigation',
-    description: 'Quiet residential streets',
-    skills: [
-      { title: 'Right turns at intersections', description: 'Signal, check, turn from correct lane' },
-      { title: 'Left turns at intersections', description: 'Yield oncoming traffic, proper lane' },
-      { title: 'Stop sign procedure', description: 'Full stop, check all directions, proceed' },
-      { title: 'Yield sign procedure', description: 'Slow, assess traffic, merge safely' },
-      { title: 'Traffic light responses', description: 'Green, yellow, red — proper responses' },
-      { title: 'Lane changes on surface streets', description: 'Signal, mirror, blind spot, move' },
-      { title: 'Proper speed for residential areas', description: 'Typically 25 mph, watch for children' },
-      { title: 'Pedestrian right-of-way', description: 'Crosswalks, driveways, school zones' },
-      { title: 'Navigating 4-way stops', description: 'Right-of-way order, communication' },
-      { title: 'U-turns where legal', description: 'Check signs, traffic, execute safely' },
-      { title: 'Driveway entry and exit', description: 'Check pedestrians and traffic' },
-    ],
-  },
-  {
-    orderIndex: 4,
-    title: 'Intermediate Traffic Skills',
-    description: 'Busier streets and multi-lane roads',
-    skills: [
-      { title: 'Multi-lane road navigation', description: 'Choose correct lane, maintain position' },
-      { title: 'Left turn from center turn lane', description: 'Enter and exit correctly' },
-      { title: 'Right turn on red', description: 'Full stop, check, go when safe' },
-      { title: 'Protected left turn signal', description: 'Green arrow — turn efficiently' },
-      { title: 'Unprotected left turn', description: 'Yield, gap judgment, turn safely' },
-      { title: 'Roundabout navigation', description: 'Yield to traffic, enter, exit correct lane' },
-      { title: 'School zone awareness', description: 'Speed, zones, bus protocols' },
-      { title: 'Railroad crossing procedure', description: 'Stop, look, listen, cross safely' },
-      { title: 'Emergency vehicle response', description: 'Pull right, stop, yield' },
-      { title: 'Construction zone driving', description: 'Reduce speed, follow signs, workers present' },
-    ],
-  },
-  {
-    orderIndex: 5,
-    title: 'Highway and Freeway Driving',
-    description: 'High-speed, multi-lane traffic',
-    skills: [
-      { title: 'On-ramp acceleration and merging', description: 'Match speed, find gap, merge smoothly' },
-      { title: 'Highway lane maintenance', description: 'Stay centered, consistent speed' },
-      { title: 'Highway speed judgment', description: 'Posted limits, flow of traffic' },
-      { title: 'Following distance at highway speeds', description: '3-4 second rule minimum' },
-      { title: 'Lane changes on highway', description: 'Signal, mirror, blind spot check' },
-      { title: 'Passing other vehicles', description: 'When legal, safely execute' },
-      { title: 'Exit ramp procedure', description: 'Signal early, reduce speed on ramp' },
-      { title: 'Dealing with large trucks', description: 'Blind spots, safe following distance' },
-      { title: 'Highway driving at night', description: 'Headlights, following distance, fatigue' },
-      { title: 'Interstate interchange navigation', description: 'Multi-level, following signs' },
-    ],
-  },
-  {
-    orderIndex: 6,
-    title: 'Challenging Conditions',
-    description: 'Weather and visibility challenges',
-    skills: [
-      { title: 'Rain driving', description: 'Reduce speed, increase following distance' },
-      { title: 'Wet road braking distances', description: 'Stop earlier, avoid sudden braking' },
-      { title: 'Fog driving', description: 'Low beams, slower speeds, more space' },
-      { title: 'Bright sunlight and glare', description: 'Sun visors, sunglasses, slow down' },
-      { title: 'Night driving skills', description: 'Use headlights, watch for pedestrians' },
-      { title: 'Gravel or unpaved roads', description: 'Slower speeds, wider turns' },
-      { title: 'Road construction detours', description: 'Follow signs, watch for changes' },
-      { title: 'Tire blowout response', description: 'Grip wheel, ease off gas, steer straight' },
-      { title: 'Brake failure response', description: 'Downshift, pump brakes, use parking brake' },
-      { title: 'Driving in heavy traffic', description: 'Patience, space management, no aggression' },
-    ],
-  },
-  {
-    orderIndex: 7,
-    title: 'Advanced Safety and Emergency Skills',
-    description: 'Defensive driving mastery',
-    skills: [
-      { title: 'Defensive driving principles', description: 'Anticipate, scan, plan ahead' },
-      { title: 'Identifying aggressive drivers', description: 'Avoid, don\'t engage, create distance' },
-      { title: 'Distraction avoidance', description: 'Phone away, focus on road' },
-      { title: 'Drowsy driving awareness', description: 'Signs of fatigue, when to stop' },
-      { title: 'Road rage de-escalation', description: 'Stay calm, don\'t retaliate' },
-      { title: 'Skid recovery', description: 'Steer into skid, don\'t overcorrect' },
-      { title: 'Hydroplaning response', description: 'Ease off gas, steer straight' },
-      { title: 'Animal crossing response', description: 'Brake safely, don\'t swerve into traffic' },
-      { title: 'Debris in road response', description: 'Assess, avoid safely, don\'t overreact' },
-      { title: 'Accident scene response', description: 'Move to safety, call 911, document' },
-      { title: 'Flat tire while driving', description: 'Grip wheel, slow gradually, pull over' },
-      { title: 'Car fire response', description: 'Pull over, exit, stay away, call 911' },
-      { title: 'Navigating without GPS', description: 'Map reading, landmarks, asking directions' },
-      { title: 'Parallel parking on hills', description: 'Curbing wheels, parking brake' },
-      { title: 'Towing awareness', description: 'Stopping distance, turning radius change' },
-    ],
-  },
-  {
-    orderIndex: 8,
-    title: 'Independent Driving Readiness',
-    description: 'Real-world navigation and judgment',
-    skills: [
-      { title: 'Solo trip planning', description: 'Route selection, timing, alternatives' },
-      { title: 'Unfamiliar area navigation', description: 'GPS use, street signs, asking for help' },
-      { title: 'Parking in tight urban spaces', description: 'Judgment, patience, multiple attempts ok' },
-      { title: 'Drive-through navigation', description: 'Ordering, pulling forward, etiquette' },
-      { title: 'Gas station operation', description: 'Fuel type, pump operation, payment' },
-      { title: 'Car wash navigation', description: 'Automatic wash procedure' },
-      { title: 'Grocery store parking lot', description: 'Cart areas, pedestrian traffic' },
-      { title: 'School pickup/dropoff zones', description: 'Rules, patience, watching for kids' },
-      { title: 'Highway rest stop usage', description: 'Entering, exiting, parking' },
-      { title: 'Driving with passengers', description: 'Managing distractions from others' },
-      { title: 'Night solo driving', description: 'Confidence and judgment alone at night' },
-      { title: 'Extended trip (30+ min highway)', description: 'Fatigue management, comfort stops' },
-      { title: 'Bad weather solo driving', description: 'Independent decision to delay/stop' },
-      { title: 'Vehicle pre-trip inspection', description: 'Tires, lights, fluids check' },
-      { title: 'Missouri driver\'s test simulation', description: 'Pass full mock behind-wheel test' },
-    ],
-  },
-]
+})
 
 const quizQuestions = [
   // Rules of the Road
@@ -273,36 +123,14 @@ const quizQuestions = [
 async function main() {
   console.log('Seeding database...')
 
-  // Clear existing data
-  await prisma.quizResult.deleteMany()
-  await prisma.quizQuestion.deleteMany()
-  await prisma.skillProgress.deleteMany()
-  await prisma.skill.deleteMany()
-  await prisma.phase.deleteMany()
-
-  // Seed phases and skills
-  for (const phase of phases) {
-    const createdPhase = await prisma.phase.create({
-      data: {
-        orderIndex: phase.orderIndex,
-        title: phase.title,
-        description: phase.description,
-        skills: {
-          create: phase.skills.map((skill, index) => ({
-            orderIndex: index + 1,
-            title: skill.title,
-            description: skill.description,
-          })),
-        },
-      },
-    })
-    console.log(`Created phase: ${createdPhase.title}`)
+  const existingQuestions = await prisma.quizQuestion.count()
+  if (existingQuestions > 0) {
+    console.log(`Quiz questions already present (${existingQuestions}); skipping seed.`)
+    return
   }
 
-  // Seed quiz questions
   await prisma.quizQuestion.createMany({ data: quizQuestions })
   console.log(`Created ${quizQuestions.length} quiz questions`)
-
   console.log('Seeding complete!')
 }
 

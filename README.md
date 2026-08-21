@@ -13,9 +13,9 @@ Teen Driver Training Tracker — Missouri edition.
 
 ## Tech Stack
 
-- **Next.js 15** (App Router, TypeScript, standalone output)
-- **Prisma** ORM with PostgreSQL (Neon)
-- **Fly.io** deployment
+- **Next.js 16** (App Router, TypeScript, standalone output)
+- **Prisma** ORM with **Neon Postgres** (pooled runtime URL + direct URL for migrations)
+- **Fly.io** for the app
 - **TailwindCSS** + custom CSS design system
 
 ## Local Setup
@@ -26,12 +26,14 @@ npm install
 
 # 2. Set up environment
 cp .env.example .env
-# Edit .env with your DATABASE_URL
+# Paste your Neon connection strings:
+#   DATABASE_URL  = pooled host (contains `-pooler`)
+#   DIRECT_URL    = same credentials with `-pooler` removed from the hostname
 
 # 3. Run database migrations
-npx prisma db push
+npx prisma migrate deploy
 
-# 4. Seed the database (phases, skills, quiz questions)
+# 4. Seed quiz questions (safe to re-run; skips if questions already exist)
 npx prisma db seed
 
 # 5. Start dev server
@@ -40,18 +42,48 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
+Creating a driver copies the 8-phase / 95-skill checklist into that driver's profile.
+
+## Neon database
+
+1. Create a project at [console.neon.tech](https://console.neon.tech).
+2. Copy **both** connection strings from the dashboard:
+   - **Pooled** → `DATABASE_URL` (hostname includes `-pooler`)
+   - **Direct** → `DIRECT_URL` (same host without `-pooler`)
+3. Keep `sslmode=require` on both.
+
+Prisma Client uses the pooled URL. `prisma migrate` uses the direct URL.
+
+If you are moving off Fly Postgres, dump the old database and restore into Neon before pointing the app at it:
+
+```bash
+# From a machine that can reach Fly Postgres
+fly postgres connect -a learn2drive-db
+pg_dump "$OLD_DATABASE_URL" --no-owner --no-acl > learn2drive.dump.sql
+psql "$DIRECT_URL" < learn2drive.dump.sql
+```
+
+Then set the Fly app secrets to the Neon URLs (below). After a successful cutover you can destroy the Fly Postgres app.
+
 ## Deploy to Fly.io
 
 ```bash
 # First time setup
 fly apps create learn2drive
-fly secrets set DATABASE_URL="your-neon-postgres-url"
 
-# Deploy
+# Neon connection strings — do not attach Fly Postgres
+fly secrets set \
+  DATABASE_URL="postgresql://USER:PASSWORD@ep-xxx-pooler.REGION.aws.neon.tech/neondb?sslmode=require" \
+  DIRECT_URL="postgresql://USER:PASSWORD@ep-xxx.REGION.aws.neon.tech/neondb?sslmode=require"
+
+# Deploy (runs prisma migrate deploy as the release command)
 fly deploy
+```
 
-# After first deploy — run seed on production
-fly ssh console -C "npx prisma db seed" -a learn2drive
+Seed quiz questions from your laptop against Neon (uses `DIRECT_URL`). It is safe to re-run; it skips when questions already exist:
+
+```bash
+npx prisma db seed
 ```
 
 ## Database Schema
@@ -59,23 +91,19 @@ fly ssh console -C "npx prisma db seed" -a learn2drive
 | Table | Purpose |
 |-------|---------|
 | `Driver` | Driver profiles (name, birthDate, startDate) |
-| `Phase` | 8 training phases |
+| `Phase` | 8 training phases **per driver** |
 | `Skill` | 95 skills across phases |
 | `SkillProgress` | Per-driver skill status + notes/feedback |
 | `DrivingLog` | Driving session logs |
-| `DriverNote` | Instructor notes |
 | `QuizQuestion` | 100 DMV quiz questions |
 | `QuizResult` | Quiz attempt history |
 
 ## Resetting the Database
 
 ```bash
-# Local
-npx prisma db push --force-reset
+# Local (destroys data)
+npx prisma migrate reset
 npx prisma db seed
 
-# Production
-fly ssh console -a learn2drive
-> npx prisma db push --force-reset
-> npx prisma db seed
+# Production — avoid migrate reset. Restore from a Neon branch/backup instead.
 ```
