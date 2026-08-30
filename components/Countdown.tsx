@@ -1,5 +1,6 @@
 'use client'
 import { useMemo } from 'react'
+import { ageInYears, birthdayAtAge, daysBetweenUTC, formatDateOnly, todayAsUTC } from '@/lib/date'
 
 interface CountdownProps {
   birthDate: string | Date
@@ -8,13 +9,9 @@ interface CountdownProps {
 
 export default function Countdown({ birthDate, targetAge = 16 }: CountdownProps) {
   const { months, days, totalDays, age, targetDate } = useMemo(() => {
-    const birth = new Date(birthDate)
-    const target = new Date(birth)
-    target.setFullYear(birth.getFullYear() + targetAge)
-    const now = new Date()
-
-    const totalDays = Math.max(0, Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-    const age = Math.floor((now.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25))
+    const target = birthdayAtAge(birthDate, targetAge)
+    const totalDays = daysBetweenUTC(todayAsUTC(), target)
+    const age = ageInYears(birthDate)
 
     let months = 0
     let remainDays = totalDays
@@ -28,7 +25,7 @@ export default function Countdown({ birthDate, targetAge = 16 }: CountdownProps)
       days: remainDays,
       totalDays,
       age,
-      targetDate: target.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      targetDate: formatDateOnly(target, { month: 'long', day: 'numeric', year: 'numeric' }),
     }
   }, [birthDate, targetAge])
 
