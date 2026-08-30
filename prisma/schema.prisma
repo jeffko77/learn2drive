@@ -93,6 +93,8 @@ model QuizQuestion {
   correctAnswer    String       @map("correct_answer")
   explanation      String?
   chapterReference String?      @map("chapter_reference")
+  sourceUrl        String?      @map("source_url")
+  sourceQuote      String?      @map("source_quote")
   createdAt        DateTime     @default(now()) @map("created_at")
   quizAnswers      QuizAnswer[]
 

@@ -9,7 +9,7 @@ Teen Driver Training Tracker — Missouri edition.
 - **Progress Tracking** — Per-skill status: not started / in progress / completed
 - **Driving Log** — Log sessions with date, duration, location, notes
 - **Notes** — Instructor notes per driver
-- **Quiz Center** — 100 Missouri DMV questions across 13 topics, practice tests, topic drills
+- **Quiz Center** — 100 Missouri DMV questions across 13 topics, each with a citation to the Missouri Driver Guide or statute
 
 ## Tech Stack
 
@@ -33,7 +33,7 @@ cp .env.example .env
 # 3. Run database migrations
 npx prisma migrate deploy
 
-# 4. Seed quiz questions (safe to re-run; skips if questions already exist)
+# 4. Seed quiz questions (safe to re-run; replaces the question bank and keeps citations current)
 npx prisma db seed
 
 # 5. Start dev server
@@ -80,7 +80,7 @@ fly secrets set \
 fly deploy
 ```
 
-Seed quiz questions from your laptop against Neon (uses `DIRECT_URL`). It is safe to re-run; it skips when questions already exist:
+Seed quiz questions from your laptop against Neon (uses `DIRECT_URL`). Re-running replaces the question bank so answer and source fixes are applied:
 
 ```bash
 npx prisma db seed
@@ -95,7 +95,7 @@ npx prisma db seed
 | `Skill` | 95 skills across phases |
 | `SkillProgress` | Per-driver skill status + notes/feedback |
 | `DrivingLog` | Driving session logs |
-| `QuizQuestion` | 100 DMV quiz questions |
+| `QuizQuestion` | 100 DMV quiz questions with source quotes and links |
 | `QuizResult` | Quiz attempt history |
 
 ## Resetting the Database

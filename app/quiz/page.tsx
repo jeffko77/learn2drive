@@ -5,6 +5,9 @@ interface Question {
   id: string; topic: string; questionText: string
   optionA: string; optionB: string; optionC: string; optionD: string
   correctAnswer: string; explanation?: string
+  chapterReference?: string | null
+  sourceUrl?: string | null
+  sourceQuote?: string | null
 }
 
 const TOPICS = [
@@ -15,7 +18,7 @@ const TOPICS = [
 ]
 
 const TOPIC_COUNTS: Record<string, number> = {
-  'Rules of the Road': 15, 'Safe Driving': 18, 'Traffic Signs and Signals': 13,
+  'Rules of the Road': 16, 'Safe Driving': 16, 'Traffic Signs and Signals': 14,
   'Alcohol, Drugs, and Driving': 9, 'Sharing the Road': 10,
   'Missouri Driver License Requirements': 6, 'Highway Driving': 5,
   'Parking Regulations': 5, 'Pavement Markings': 5,
@@ -49,7 +52,7 @@ function QuizRunner({ questions, onDone }: {
 
   function next() {
     if (current + 1 >= questions.length) {
-      onDone(score + (selected === q.correctAnswer ? 1 : 0), questions.length)
+      onDone(score, questions.length)
     } else {
       setCurrent(c => c + 1)
       setSelected(null)
@@ -105,11 +108,31 @@ function QuizRunner({ questions, onDone }: {
         })}
       </div>
 
-      {/* Explanation */}
-      {revealed && q.explanation && (
+      {/* Explanation + source */}
+      {revealed && (q.explanation || q.sourceQuote) && (
         <div style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 10, padding: '12px 14px', marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-blue)', marginBottom: 6 }}>Explanation</div>
-          <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{q.explanation}</div>
+          {q.explanation && (
+            <>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-blue)', marginBottom: 6 }}>Explanation</div>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{q.explanation}</div>
+            </>
+          )}
+          {q.sourceQuote && (
+            <blockquote style={{ margin: q.explanation ? '12px 0 0' : 0, padding: '8px 0 0 12px', borderLeft: '3px solid var(--accent-blue)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5, fontStyle: 'italic' }}>
+              {q.sourceQuote}
+            </blockquote>
+          )}
+          {(q.sourceUrl || q.chapterReference) && (
+            <div style={{ marginTop: 10, fontSize: 12 }}>
+              {q.sourceUrl ? (
+                <a href={q.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-blue)', fontWeight: 600 }}>
+                  Source{q.chapterReference ? `: ${q.chapterReference}` : ''} ↗
+                </a>
+              ) : (
+                <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Source: {q.chapterReference}</span>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -252,7 +275,7 @@ export default function QuizPage() {
                 <div style={{ fontSize: '1.2rem' }}>🎯</div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 16 }}>Practice Test</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>25 questions, like the real test</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>25 questions from the Missouri Driver Guide</div>
                 </div>
               </div>
               <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: 16 }}
@@ -297,7 +320,7 @@ export default function QuizPage() {
               Road signs questions are mixed into the written test. Practice the Written Test above to study sign recognition questions.
             </div>
             <button className="btn-primary" style={{ justifyContent: 'center', margin: '0 auto' }}
-              onClick={() => startQuiz('Traffic Signs and Signals', 13)}>
+              onClick={() => startQuiz('Traffic Signs and Signals', 14)}>
               Start Signs Quiz
             </button>
           </div>
