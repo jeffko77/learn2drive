@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ProgressBar from '@/components/ProgressBar'
+import { ageInYears, birthdayAtAge, daysBetweenUTC, formatDateOnly, todayAsUTC } from '@/lib/date'
 
 interface Driver {
   id: string; name: string; birthDate: string; startDate: string
@@ -9,11 +10,7 @@ interface Driver {
 }
 
 function daysUntil16(birthDate: string, nowTimestamp: number) {
-  const birth = new Date(birthDate)
-  const target = new Date(birth)
-  target.setFullYear(birth.getFullYear() + 16)
-  const diff = Math.ceil((target.getTime() - nowTimestamp) / 86400000)
-  return Math.max(0, diff)
+  return daysBetweenUTC(todayAsUTC(new Date(nowTimestamp)), birthdayAtAge(birthDate, 16))
 }
 
 function AddDriverModal({ onClose, onAdd }: { onClose: () => void; onAdd: (d: Driver) => void }) {
@@ -125,7 +122,7 @@ export default function DriversPage() {
 
         {filtered.map(driver => {
           const days = daysUntil16(driver.birthDate, nowTimestamp)
-          const age = Math.floor((nowTimestamp - new Date(driver.birthDate).getTime()) / (365.25 * 86400000))
+          const age = ageInYears(driver.birthDate, new Date(nowTimestamp))
 
           return (
             <div key={driver.id} className="card" style={{ overflow: 'hidden' }}>
@@ -137,7 +134,7 @@ export default function DriversPage() {
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 700, fontSize: 17, color: 'var(--text-primary)' }}>{driver.name}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>
-                      Age {age} &bull; Started {new Date(driver.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                      Age {age} &bull; Started {formatDateOnly(driver.startDate, { month: 'short', year: 'numeric' })}
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

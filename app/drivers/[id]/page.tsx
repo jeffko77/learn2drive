@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState, use } from 'react'
 import Link from 'next/link'
 import Countdown from '@/components/Countdown'
 import ProgressBar from '@/components/ProgressBar'
+import { formatDateOnly } from '@/lib/date'
 
 type Status = 'not_started' | 'in_progress' | 'completed'
 
@@ -273,7 +274,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
         <div>
           <div style={{ fontFamily: 'Barlow Condensed', fontSize: '2rem', fontWeight: 800 }}>{driver.name}</div>
           <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-            Training since {new Date(driver.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            Training since {formatDateOnly(driver.startDate, { month: 'long', year: 'numeric' })}
           </div>
         </div>
 
@@ -371,7 +372,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                   <div key={log.id} style={{ padding: '10px 0', borderBottom: i < logs.length - 1 ? '1px solid var(--border)' : 'none', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                        <span style={{ fontWeight: 700, fontSize: 14 }}>{new Date(log.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        <span style={{ fontWeight: 700, fontSize: 14 }}>{formatDateOnly(log.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                         <span style={{ background: 'rgba(59,130,246,0.1)', color: 'var(--accent-blue)', borderRadius: 6, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>{log.duration} min</span>
                         {log.location && <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>📍 {log.location}</span>}
                       </div>
