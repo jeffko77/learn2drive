@@ -9,7 +9,7 @@ type Status = 'not_started' | 'in_progress' | 'completed'
 type Filter = 'all' | 'not_started' | 'in_progress' | 'completed'
 
 interface Skill {
-  id: string; title: string; description: string; orderIndex: number
+  id: string; title: string; description: string; teachingNotes?: string | null; orderIndex: number
   progress: { status: Status; completedAt?: string } | null
 }
 interface Phase {
@@ -202,6 +202,11 @@ function TrainingContent() {
                             <div style={{ flex: 1 }}>
                               <div style={{ fontSize: 14, fontWeight: 600, color: status === 'completed' ? 'var(--text-muted)' : 'var(--text-primary)', textDecoration: status === 'completed' ? 'line-through' : 'none' }}>{skill.title}</div>
                               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{skill.description}</div>
+                              {skill.teachingNotes && (
+                                <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', marginTop: 4, lineHeight: 1.45 }}>
+                                  {skill.teachingNotes}
+                                </div>
+                              )}
                               {status === 'completed' && skill.progress?.completedAt && (
                                 <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>
                                   ✓ {new Date(skill.progress.completedAt).toLocaleDateString()}

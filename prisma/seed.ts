@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { teachingNotesByTitle } from '../lib/training-phases'
 
 const prisma = new PrismaClient({
   datasources: {
@@ -120,8 +121,19 @@ const quizQuestions = [
   { topic: 'Hand Signals', questionText: 'What does it mean when a driver extends their left arm downward at a 90-degree angle?', optionA: 'Left turn', optionB: 'Right turn', optionC: 'Slowing or stopping', optionD: 'Hazard warning', correctAnswer: 'C', explanation: 'Left arm bent downward at 90 degrees indicates slowing down or stopping.' },
 ]
 
+async function backfillTeachingNotes() {
+  const notes = teachingNotesByTitle()
+  let updated = 0
+  for (const [title, teachingNotes] of notes) {
+    const result = await prisma.skill.updateMany({ where: { title }, data: { teachingNotes } })
+    updated += result.count
+  }
+  console.log(`Updated teaching notes on ${updated} existing skills`)
+}
+
 async function main() {
   console.log('Seeding database...')
+  await backfillTeachingNotes()
 
   const existingQuestions = await prisma.quizQuestion.count()
   if (existingQuestions > 0) {

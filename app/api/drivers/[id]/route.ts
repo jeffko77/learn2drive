@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { teachingNotesByTitle } from '@/lib/training-phases'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -21,10 +22,12 @@ export async function GET(_req: NextRequest, { params }: Params) {
       include: { skills: { orderBy: { orderIndex: 'asc' }, include: { progress: true } } },
     })
 
+    const catalogNotes = teachingNotesByTitle()
     const phasesWithProgress = phases.map((phase) => ({
       ...phase,
       skills: phase.skills.map((skill) => ({
         ...skill,
+        teachingNotes: catalogNotes.get(skill.title) ?? skill.teachingNotes ?? null,
         progress: skill.progress || null,
       })),
       completed: phase.skills.filter((s) => s.progress?.status === 'completed').length,

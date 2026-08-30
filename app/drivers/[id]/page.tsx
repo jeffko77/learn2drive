@@ -7,7 +7,7 @@ import ProgressBar from '@/components/ProgressBar'
 type Status = 'not_started' | 'in_progress' | 'completed'
 
 interface Skill {
-  id: string; title: string; description: string; orderIndex: number
+  id: string; title: string; description: string; teachingNotes?: string | null; orderIndex: number
   progress: { status: Status; notes?: string; feedback?: string; completedAt?: string } | null
 }
 interface Phase {
@@ -34,6 +34,7 @@ const STATUS_COLOR: Record<Status, string> = {
 function SkillRow({ skill, onUpdate }: { skill: Skill; onUpdate: (skillId: string, status: Status) => void }) {
   const [expanded, setExpanded] = useState(false)
   const status: Status = skill.progress?.status as Status || 'not_started'
+  const hasExtra = Boolean(skill.progress?.notes || skill.progress?.feedback)
 
   function cycleStatus(e: React.MouseEvent) {
     e.stopPropagation()
@@ -42,8 +43,8 @@ function SkillRow({ skill, onUpdate }: { skill: Skill; onUpdate: (skillId: strin
 
   return (
     <div style={{ borderBottom: '1px solid var(--border)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: 'pointer' }}
-        onClick={() => setExpanded(!expanded)}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: hasExtra ? 'pointer' : 'default' }}
+        onClick={() => { if (hasExtra) setExpanded(!expanded) }}>
         <button onClick={cycleStatus}
           style={{ width: 28, height: 28, borderRadius: 8, border: `1.5px solid ${STATUS_COLOR[status]}`, background: status === 'completed' ? STATUS_COLOR[status] : 'transparent', color: status === 'completed' ? '#070d1a' : STATUS_COLOR[status], fontWeight: 700, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}>
           {STATUS_ICON[status]}
@@ -53,18 +54,23 @@ function SkillRow({ skill, onUpdate }: { skill: Skill; onUpdate: (skillId: strin
             {skill.title}
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{skill.description}</div>
+          {skill.teachingNotes && (
+            <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', marginTop: 4, lineHeight: 1.45 }}>
+              {skill.teachingNotes}
+            </div>
+          )}
           {status === 'completed' && skill.progress?.completedAt && (
             <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>
               Completed {new Date(skill.progress.completedAt).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}
             </div>
           )}
         </div>
-        {expanded
+        {hasExtra && (expanded
           ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><polyline points="18 15 12 9 6 15"/></svg>
           : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
-        }
+        )}
       </div>
-      {expanded && (
+      {expanded && (skill.progress?.notes || skill.progress?.feedback) && (
         <div style={{ padding: '0 16px 12px', marginLeft: 40 }}>
           {skill.progress?.notes && (
             <div style={{ background: 'var(--bg-elevated)', borderRadius: 8, padding: '8px 12px', marginBottom: 8 }}>
@@ -77,9 +83,6 @@ function SkillRow({ skill, onUpdate }: { skill: Skill; onUpdate: (skillId: strin
               <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-gold-dim)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Feedback</div>
               <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{skill.progress.feedback}</div>
             </div>
-          )}
-          {!skill.progress?.notes && !skill.progress?.feedback && (
-            <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>Tap status icon to cycle: not started → in progress → completed</div>
           )}
         </div>
       )}

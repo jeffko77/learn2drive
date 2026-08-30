@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
                 orderIndex: index + 1,
                 title: skill.title,
                 description: skill.description,
+                teachingNotes: skill.teachingNotes,
               })),
             },
           })),
