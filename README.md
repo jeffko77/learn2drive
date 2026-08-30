@@ -76,13 +76,17 @@ fly secrets set \
   DATABASE_URL="postgresql://USER:PASSWORD@ep-xxx-pooler.REGION.aws.neon.tech/neondb?sslmode=require" \
   DIRECT_URL="postgresql://USER:PASSWORD@ep-xxx.REGION.aws.neon.tech/neondb?sslmode=require"
 
-# Deploy (runs prisma migrate deploy as the release command)
+# Deploy (release command runs prisma migrate deploy, then seeds the quiz)
 fly deploy
 ```
 
-Seed quiz questions from your laptop against Neon (uses `DIRECT_URL`). Re-running replaces the question bank so answer and source fixes are applied:
+A Fly redeploy applies migrations and replaces the quiz question bank. That uses the `DATABASE_URL` and `DIRECT_URL` Fly secrets — the same two variables local `prisma migrate deploy` / `prisma db seed` need in `.env`.
+
+To seed from your laptop against Neon instead:
 
 ```bash
+cp .env.example .env   # then paste both Neon URLs
+npx prisma migrate deploy
 npx prisma db seed
 ```
 
